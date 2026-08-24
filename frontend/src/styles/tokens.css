@@ -1,0 +1,16 @@
+:root {
+  --burgundy: #6b1e2e;
+  --wine: #4a1420;
+  --nude: #e8cfc0;
+  --cream: #f7ede7;
+  --brown: #5a3a32;
+  --taupe: #8a6a5c;
+  --ivory: #fcf8f5;
+  --white: #ffffff;
+  --mastered: #5e8c61;
+  --improving: #c08a3e;
+  --review: #8c3a3a;
+  --notstarted: #b9a79c;
+  --shadow: 0 1px 2px rgba(90, 58, 50, 0.06), 0 6px 20px rgba(90, 58, 50, 0.06);
+  --radius: 18px;
+}

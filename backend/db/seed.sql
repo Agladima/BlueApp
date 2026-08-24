@@ -1,0 +1,2 @@
+-- Country seed is shared from the frontend data source in this workspace.
+-- Run an INSERT generator against frontend/src/data/countries.js for full seed data.
