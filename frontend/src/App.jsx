@@ -284,7 +284,7 @@ function useBlueApp() {
     if (!data.profile?.notifPrefs?.weeklyReminder) return false
     const latest = latestWeeklyAttempt()
     const continent = activeContinent || learnContinent || latest?.continent || data.profile.selectedContinents?.[0] || 'Africa'
-    if (!latest) return { continent, phase: 'tomorrow' }
+    if (!latest) return null
     const daysSince = Math.floor((Date.now() - new Date(latest.completedAt).getTime()) / 86400000)
     if (daysSince < 6) return null
     return {
