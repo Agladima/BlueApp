@@ -1,14 +1,5 @@
 {
-  "users": [
-    {
-      "id": "b121e220-34c8-4ae2-a6ea-e99aa3d0e46f",
-      "fullName": "Augustine Agladima",
-      "email": "austinagladima@gmail.com",
-      "password": "Agladima",
-      "provider": "password",
-      "createdAt": "2026-08-26T01:58:13.408Z"
-    }
-  ],
+  "users": [],
   "sessions": [],
   "countries": [
     {

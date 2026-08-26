@@ -6,6 +6,12 @@ import { loadStore, writeStore } from './store.js'
 
 const useSupabase = Boolean(env.supabaseUrl && env.supabaseSecretKey)
 
+function requireSupabaseAuth() {
+  if (!useSupabase) {
+    throw new Error('Supabase auth is required. Set SUPABASE_URL and SUPABASE_SECRET_KEY in backend env.')
+  }
+}
+
 function authHeaders({ apikey = env.supabaseSecretKey, token = env.supabaseSecretKey } = {}) {
   const headers = {
     apikey,
@@ -228,20 +234,7 @@ export async function ensureSeedData() {
 }
 
 export async function signUpWithPassword({ fullName, email, password }) {
-  if (!useSupabase) {
-    const store = loadStore()
-    const existing = store.users.find((user) => user.email === email)
-    if (existing) throw new Error('Account already exists')
-    const id = crypto.randomUUID()
-    const createdAt = new Date().toISOString()
-    store.users.push({ id, fullName, email, password, provider: 'password', createdAt })
-    store.profiles[id] = demoProfile(fullName, email)
-    store.profiles[id].createdAt = createdAt
-    store.progress[id] = {}
-    store.userAchievements[id] = []
-    writeStore(store)
-    return { user: { id, email, user_metadata: { full_name: fullName } }, session: { access_token: `demo-${id}` } }
-  }
+  requireSupabaseAuth()
 
   const payload = await supabaseRequest('/auth/v1/signup', {
     method: 'POST',
@@ -258,12 +251,7 @@ export async function signUpWithPassword({ fullName, email, password }) {
 }
 
 export async function signInWithPassword({ email, password, fullName = 'BlueApp User' }) {
-  if (!useSupabase) {
-    const store = loadStore()
-    let user = store.users.find((entry) => entry.email === email)
-    if (!user || user.password !== password) throw new Error('Invalid email or password')
-    return { user, session: { access_token: `demo-${user.id}` } }
-  }
+  requireSupabaseAuth()
 
   const payload = await supabaseRequest('/auth/v1/token?grant_type=password', {
     method: 'POST',
@@ -276,16 +264,14 @@ export async function signInWithPassword({ email, password, fullName = 'BlueApp 
 }
 
 export function buildGoogleAuthUrl() {
-  if (!useSupabase) {
-    return null
-  }
+  requireSupabaseAuth()
   const redirectTo = env.frontendUrl || 'http://localhost:5173'
   const redirect = encodeURIComponent(redirectTo)
   return `${env.supabaseUrl}/auth/v1/authorize?provider=google&redirect_to=${redirect}`
 }
 
 export async function recoverPassword(email) {
-  if (!useSupabase) return { ok: true }
+  requireSupabaseAuth()
   return supabaseRequest('/auth/v1/recover', {
     method: 'POST',
     token: env.supabaseSecretKey,
@@ -299,17 +285,7 @@ export async function updatePassword(userId, { currentPassword, newPassword, aut
     throw new Error('New password must be at least 6 characters long')
   }
 
-  if (!useSupabase) {
-    const store = loadStore()
-    const user = store.users.find((entry) => entry.id === userId)
-    if (!user) throw new Error('User not found')
-    if (user.password !== currentPassword) {
-      throw new Error('Current password is incorrect')
-    }
-    user.password = newPassword
-    writeStore(store)
-    return { ok: true }
-  }
+  requireSupabaseAuth()
 
   if (!authToken) {
     throw new Error('Missing session token')
@@ -326,13 +302,7 @@ export async function updatePassword(userId, { currentPassword, newPassword, aut
 }
 
 export async function getAuthedUser(token) {
-  if (!useSupabase) {
-    const store = loadStore()
-    const sessionToken = token?.startsWith('demo-') ? token.slice(5) : null
-    const user = sessionToken ? localUserById(sessionToken) : null
-    if (!user) return null
-    return { id: user.id, email: user.email, user_metadata: { full_name: user.fullName } }
-  }
+  requireSupabaseAuth()
 
   try {
     const user = await supabaseRequest('/auth/v1/user', {
