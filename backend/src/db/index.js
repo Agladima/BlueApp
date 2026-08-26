@@ -220,26 +220,18 @@ export async function signInWithPassword({ email, password, fullName = 'BlueApp 
   if (!useSupabase) {
     const store = loadStore()
     let user = store.users.find((entry) => entry.email === email)
-    if (!user) {
-      const created = await signUpWithPassword({ fullName, email, password })
-      return created
-    }
+    if (!user || user.password !== password) throw new Error('Invalid email or password')
     return { user, session: { access_token: `demo-${user.id}` } }
   }
 
-  try {
-    const payload = await supabaseRequest('/auth/v1/token?grant_type=password', {
-      method: 'POST',
-      token: env.supabaseSecretKey,
-      apikey: env.supabaseSecretKey,
-      body: { email, password },
-    })
-    if (payload?.user) await ensureRemoteProfile(payload.user)
-    return payload
-  } catch (error) {
-    const signUpPayload = await signUpWithPassword({ fullName, email, password })
-    return signUpPayload
-  }
+  const payload = await supabaseRequest('/auth/v1/token?grant_type=password', {
+    method: 'POST',
+    token: env.supabaseSecretKey,
+    apikey: env.supabaseSecretKey,
+    body: { email, password },
+  })
+  if (payload?.user) await ensureRemoteProfile(payload.user)
+  return payload
 }
 
 export function buildGoogleAuthUrl() {

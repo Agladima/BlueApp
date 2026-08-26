@@ -225,17 +225,8 @@ function useBlueApp() {
       setCurrentEmail(email)
       await loadProfile()
     } catch (error) {
-      const demoState = createDemoState()
-      demoState.profile.fullName = 'Demo Learner'
-      demoState.profile.email = email || 'demo@blueapp.local'
-      demoState.profile.onboarded = false
-      localStorage.setItem('blueapp:token', 'demo-token')
-      localStorage.setItem('blueapp:demo', JSON.stringify({ email: demoState.profile.email, data: demoState }))
-      setData(demoState)
-      setCurrentEmail(demoState.profile.email)
-      setScreen('onboarding')
-      setView('dashboard')
-      setAuthError(error.message || '')
+      localStorage.removeItem('blueapp:token')
+      setAuthError(error.message || 'Invalid email or password.')
     }
   }
 
@@ -256,17 +247,8 @@ function useBlueApp() {
       localStorage.setItem('blueapp:token', payload.token)
       setCurrentEmail(email)
       await loadProfile()
-    } catch {
-      const demoState = createDemoState()
-      demoState.profile.fullName = fullName || 'BlueApp User'
-      demoState.profile.email = email || 'demo@blueapp.local'
-      demoState.profile.onboarded = false
-      localStorage.setItem('blueapp:token', 'demo-token')
-      localStorage.setItem('blueapp:demo', JSON.stringify({ email: demoState.profile.email, data: demoState }))
-      setData(demoState)
-      setCurrentEmail(demoState.profile.email)
-      setScreen('onboarding')
-      setView('dashboard')
+    } catch (error) {
+      setSignupError(error.message || 'Could not create account.')
     }
   }
 
@@ -290,16 +272,8 @@ function useBlueApp() {
       }
       localStorage.setItem('blueapp:token', payload.token)
       await loadProfile()
-    } catch {
-      const demoState = createDemoState()
-      demoState.profile.fullName = 'Google Demo'
-      demoState.profile.email = 'google-demo@blueapp.local'
-      localStorage.setItem('blueapp:token', 'demo-token')
-      localStorage.setItem('blueapp:demo', JSON.stringify({ email: demoState.profile.email, data: demoState }))
-      setData(demoState)
-      setCurrentEmail(demoState.profile.email)
-      setScreen('onboarding')
-      setView('dashboard')
+    } catch (error) {
+      setAuthError(error.message || 'Google sign-in failed.')
     }
   }
 
