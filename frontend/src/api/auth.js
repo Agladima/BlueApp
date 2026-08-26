@@ -16,6 +16,10 @@ export async function forgotPassword(body) {
   return api.request('/auth/forgot-password', { method: 'POST', body: JSON.stringify(body) })
 }
 
+export async function changePassword(body) {
+  return api.request('/auth/password', { method: 'PATCH', body: JSON.stringify(body) })
+}
+
 export async function logout() {
   return api.request('/auth/logout', { method: 'POST' })
 }

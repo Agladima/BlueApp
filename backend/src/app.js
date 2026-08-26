@@ -3,12 +3,13 @@ import { env } from './config/env.js'
 import { errorHandler } from './middleware/errorHandler.js'
 import { requireAuth } from './middleware/requireAuth.js'
 import { validateRequest } from './middleware/validateRequest.js'
-import { signupController, loginController, googleController, forgotController, logoutController, deleteAccountController } from './controllers/auth.controller.js'
+import { signupController, loginController, googleController, forgotController, logoutController, deleteAccountController, passwordController } from './controllers/auth.controller.js'
 import { countriesController } from './controllers/countries.controller.js'
 import { profileDeleteController, profileGetController, profilePatchController } from './controllers/profile.controller.js'
 import { progressGetController, answerController } from './controllers/progress.controller.js'
 import { quizAttemptController } from './controllers/quiz.controller.js'
 import { achievementsController } from './controllers/achievements.controller.js'
+import { sendWeeklyReminders } from './services/reminders.js'
 
 async function readJson(req) {
   const chunks = []
@@ -35,6 +36,15 @@ export function createApp() {
         return
       }
 
+      if (path === '/health' && method === 'GET') {
+        res.end(JSON.stringify({
+          ok: true,
+          uptime: process.uptime(),
+          timestamp: new Date().toISOString(),
+        }))
+        return
+      }
+
       if (path === '/countries' && method === 'GET') return countriesController(req, res)
 
       if (path === '/auth/signup' && method === 'POST') {
@@ -45,6 +55,17 @@ export function createApp() {
       if (path === '/auth/google' && method === 'POST') return googleController(req, res, body)
       if (path === '/auth/forgot-password' && method === 'POST') return forgotController(req, res, body)
       if (path === '/auth/logout' && method === 'POST') return logoutController(req, res, body)
+      if (path === '/internal/reminders/run' && method === 'POST') {
+        const secret = req.headers['x-reminder-secret']
+        if (!env.reminderCronSecret || secret !== env.reminderCronSecret) {
+          res.statusCode = 401
+          res.end(JSON.stringify({ error: 'Unauthorized' }))
+          return
+        }
+        const result = await sendWeeklyReminders()
+        res.end(JSON.stringify(result))
+        return
+      }
 
       const auth = await requireAuth(req, res)
       if (!auth) return
@@ -52,6 +73,7 @@ export function createApp() {
       if (path === '/profile' && method === 'GET') return profileGetController(req, res)
       if (path === '/profile' && method === 'PATCH') return profilePatchController(req, res, body)
       if (path === '/profile' && method === 'DELETE') return profileDeleteController(req, res)
+      if (path === '/auth/password' && method === 'PATCH') return passwordController(req, res, body)
       if (path === '/progress' && method === 'GET') return progressGetController(req, res)
       if (path === '/progress/answer' && method === 'POST') return answerController(req, res, body)
       if (path === '/quiz-attempts' && method === 'POST') return quizAttemptController(req, res, body)

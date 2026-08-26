@@ -5,4 +5,8 @@ export const env = {
   supabaseUrl: process.env.SUPABASE_URL || '',
   frontendUrl: process.env.FRONTEND_URL || process.env.PUBLIC_APP_URL || '',
   corsOrigin: process.env.CORS_ORIGIN || '*',
+  reminderCronSecret: process.env.REMINDER_CRON_SECRET || '',
+  resendApiKey: process.env.RESEND_API_KEY || '',
+  reminderFromEmail: process.env.REMINDER_FROM_EMAIL || '',
+  appName: process.env.APP_NAME || 'BlueApp',
 }

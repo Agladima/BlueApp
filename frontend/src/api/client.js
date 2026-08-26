@@ -22,3 +22,14 @@ async function request(path, options = {}) {
 }
 
 export const api = { request, API_BASE }
+
+export async function pingBackend() {
+  try {
+    await fetch(`${API_BASE}/health`, {
+      method: 'GET',
+      cache: 'no-store',
+    })
+  } catch {
+    // Best-effort keepalive only.
+  }
+}

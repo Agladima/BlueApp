@@ -1,0 +1,1604 @@
+{
+  "users": [
+    {
+      "id": "b121e220-34c8-4ae2-a6ea-e99aa3d0e46f",
+      "fullName": "Augustine Agladima",
+      "email": "austinagladima@gmail.com",
+      "password": "Agladima",
+      "provider": "password",
+      "createdAt": "2026-08-26T01:58:13.408Z"
+    }
+  ],
+  "sessions": [],
+  "countries": [
+    {
+      "id": "AF-NG",
+      "name": "Nigeria",
+      "capital": "Abuja",
+      "code": "NG",
+      "continent": "Africa",
+      "region": "West Africa"
+    },
+    {
+      "id": "AF-GH",
+      "name": "Ghana",
+      "capital": "Accra",
+      "code": "GH",
+      "continent": "Africa",
+      "region": "West Africa"
+    },
+    {
+      "id": "AF-SN",
+      "name": "Senegal",
+      "capital": "Dakar",
+      "code": "SN",
+      "continent": "Africa",
+      "region": "West Africa"
+    },
+    {
+      "id": "AF-GM",
+      "name": "Gambia",
+      "capital": "Banjul",
+      "code": "GM",
+      "continent": "Africa",
+      "region": "West Africa"
+    },
+    {
+      "id": "AF-SL",
+      "name": "Sierra Leone",
+      "capital": "Freetown",
+      "code": "SL",
+      "continent": "Africa",
+      "region": "West Africa"
+    },
+    {
+      "id": "AF-LR",
+      "name": "Liberia",
+      "capital": "Monrovia",
+      "code": "LR",
+      "continent": "Africa",
+      "region": "West Africa"
+    },
+    {
+      "id": "AF-GN",
+      "name": "Guinea",
+      "capital": "Conakry",
+      "code": "GN",
+      "continent": "Africa",
+      "region": "West Africa"
+    },
+    {
+      "id": "AF-GW",
+      "name": "Guinea-Bissau",
+      "capital": "Bissau",
+      "code": "GW",
+      "continent": "Africa",
+      "region": "West Africa"
+    },
+    {
+      "id": "AF-CI",
+      "name": "Ivory Coast",
+      "capital": "Yamoussoukro",
+      "code": "CI",
+      "continent": "Africa",
+      "region": "West Africa"
+    },
+    {
+      "id": "AF-ML",
+      "name": "Mali",
+      "capital": "Bamako",
+      "code": "ML",
+      "continent": "Africa",
+      "region": "West Africa"
+    },
+    {
+      "id": "AF-BF",
+      "name": "Burkina Faso",
+      "capital": "Ouagadougou",
+      "code": "BF",
+      "continent": "Africa",
+      "region": "West Africa"
+    },
+    {
+      "id": "AF-NE",
+      "name": "Niger",
+      "capital": "Niamey",
+      "code": "NE",
+      "continent": "Africa",
+      "region": "West Africa"
+    },
+    {
+      "id": "AF-BJ",
+      "name": "Benin",
+      "capital": "Porto-Novo",
+      "code": "BJ",
+      "continent": "Africa",
+      "region": "West Africa"
+    },
+    {
+      "id": "AF-TG",
+      "name": "Togo",
+      "capital": "Lomé",
+      "code": "TG",
+      "continent": "Africa",
+      "region": "West Africa"
+    },
+    {
+      "id": "AF-CV",
+      "name": "Cabo Verde",
+      "capital": "Praia",
+      "code": "CV",
+      "continent": "Africa",
+      "region": "West Africa"
+    },
+    {
+      "id": "AF-MR",
+      "name": "Mauritania",
+      "capital": "Nouakchott",
+      "code": "MR",
+      "continent": "Africa",
+      "region": "West Africa"
+    },
+    {
+      "id": "AF-KE",
+      "name": "Kenya",
+      "capital": "Nairobi",
+      "code": "KE",
+      "continent": "Africa",
+      "region": "East Africa"
+    },
+    {
+      "id": "AF-UG",
+      "name": "Uganda",
+      "capital": "Kampala",
+      "code": "UG",
+      "continent": "Africa",
+      "region": "East Africa"
+    },
+    {
+      "id": "AF-TZ",
+      "name": "Tanzania",
+      "capital": "Dodoma",
+      "code": "TZ",
+      "continent": "Africa",
+      "region": "East Africa"
+    },
+    {
+      "id": "AF-ET",
+      "name": "Ethiopia",
+      "capital": "Addis Ababa",
+      "code": "ET",
+      "continent": "Africa",
+      "region": "East Africa"
+    },
+    {
+      "id": "AF-SO",
+      "name": "Somalia",
+      "capital": "Mogadishu",
+      "code": "SO",
+      "continent": "Africa",
+      "region": "East Africa"
+    },
+    {
+      "id": "AF-RW",
+      "name": "Rwanda",
+      "capital": "Kigali",
+      "code": "RW",
+      "continent": "Africa",
+      "region": "East Africa"
+    },
+    {
+      "id": "AF-BI",
+      "name": "Burundi",
+      "capital": "Gitega",
+      "code": "BI",
+      "continent": "Africa",
+      "region": "East Africa"
+    },
+    {
+      "id": "AF-SS",
+      "name": "South Sudan",
+      "capital": "Juba",
+      "code": "SS",
+      "continent": "Africa",
+      "region": "East Africa"
+    },
+    {
+      "id": "AF-DJ",
+      "name": "Djibouti",
+      "capital": "Djibouti",
+      "code": "DJ",
+      "continent": "Africa",
+      "region": "East Africa"
+    },
+    {
+      "id": "AF-ER",
+      "name": "Eritrea",
+      "capital": "Asmara",
+      "code": "ER",
+      "continent": "Africa",
+      "region": "East Africa"
+    },
+    {
+      "id": "AF-KM",
+      "name": "Comoros",
+      "capital": "Moroni",
+      "code": "KM",
+      "continent": "Africa",
+      "region": "East Africa"
+    },
+    {
+      "id": "AF-SC",
+      "name": "Seychelles",
+      "capital": "Victoria",
+      "code": "SC",
+      "continent": "Africa",
+      "region": "East Africa"
+    },
+    {
+      "id": "AF-MG",
+      "name": "Madagascar",
+      "capital": "Antananarivo",
+      "code": "MG",
+      "continent": "Africa",
+      "region": "East Africa"
+    },
+    {
+      "id": "AF-MU",
+      "name": "Mauritius",
+      "capital": "Port Louis",
+      "code": "MU",
+      "continent": "Africa",
+      "region": "East Africa"
+    },
+    {
+      "id": "AF-MW",
+      "name": "Malawi",
+      "capital": "Lilongwe",
+      "code": "MW",
+      "continent": "Africa",
+      "region": "East Africa"
+    },
+    {
+      "id": "AF-ZM",
+      "name": "Zambia",
+      "capital": "Lusaka",
+      "code": "ZM",
+      "continent": "Africa",
+      "region": "East Africa"
+    },
+    {
+      "id": "AF-EG",
+      "name": "Egypt",
+      "capital": "Cairo",
+      "code": "EG",
+      "continent": "Africa",
+      "region": "North Africa"
+    },
+    {
+      "id": "AF-MA",
+      "name": "Morocco",
+      "capital": "Rabat",
+      "code": "MA",
+      "continent": "Africa",
+      "region": "North Africa"
+    },
+    {
+      "id": "AF-DZ",
+      "name": "Algeria",
+      "capital": "Algiers",
+      "code": "DZ",
+      "continent": "Africa",
+      "region": "North Africa"
+    },
+    {
+      "id": "AF-TN",
+      "name": "Tunisia",
+      "capital": "Tunis",
+      "code": "TN",
+      "continent": "Africa",
+      "region": "North Africa"
+    },
+    {
+      "id": "AF-LY",
+      "name": "Libya",
+      "capital": "Tripoli",
+      "code": "LY",
+      "continent": "Africa",
+      "region": "North Africa"
+    },
+    {
+      "id": "AF-SD",
+      "name": "Sudan",
+      "capital": "Khartoum",
+      "code": "SD",
+      "continent": "Africa",
+      "region": "North Africa"
+    },
+    {
+      "id": "AF-CM",
+      "name": "Cameroon",
+      "capital": "Yaoundé",
+      "code": "CM",
+      "continent": "Africa",
+      "region": "Central Africa"
+    },
+    {
+      "id": "AF-TD",
+      "name": "Chad",
+      "capital": "N'Djamena",
+      "code": "TD",
+      "continent": "Africa",
+      "region": "Central Africa"
+    },
+    {
+      "id": "AF-CF",
+      "name": "Central African Republic",
+      "capital": "Bangui",
+      "code": "CF",
+      "continent": "Africa",
+      "region": "Central Africa"
+    },
+    {
+      "id": "AF-CG",
+      "name": "Republic of the Congo",
+      "capital": "Brazzaville",
+      "code": "CG",
+      "continent": "Africa",
+      "region": "Central Africa"
+    },
+    {
+      "id": "AF-CD",
+      "name": "DR Congo",
+      "capital": "Kinshasa",
+      "code": "CD",
+      "continent": "Africa",
+      "region": "Central Africa"
+    },
+    {
+      "id": "AF-GA",
+      "name": "Gabon",
+      "capital": "Libreville",
+      "code": "GA",
+      "continent": "Africa",
+      "region": "Central Africa"
+    },
+    {
+      "id": "AF-GQ",
+      "name": "Equatorial Guinea",
+      "capital": "Malabo",
+      "code": "GQ",
+      "continent": "Africa",
+      "region": "Central Africa"
+    },
+    {
+      "id": "AF-ST",
+      "name": "Sao Tome and Principe",
+      "capital": "São Tomé",
+      "code": "ST",
+      "continent": "Africa",
+      "region": "Central Africa"
+    },
+    {
+      "id": "AF-ZA",
+      "name": "South Africa",
+      "capital": "Pretoria",
+      "code": "ZA",
+      "continent": "Africa",
+      "region": "Southern Africa"
+    },
+    {
+      "id": "AF-NA",
+      "name": "Namibia",
+      "capital": "Windhoek",
+      "code": "NA",
+      "continent": "Africa",
+      "region": "Southern Africa"
+    },
+    {
+      "id": "AF-BW",
+      "name": "Botswana",
+      "capital": "Gaborone",
+      "code": "BW",
+      "continent": "Africa",
+      "region": "Southern Africa"
+    },
+    {
+      "id": "AF-ZW",
+      "name": "Zimbabwe",
+      "capital": "Harare",
+      "code": "ZW",
+      "continent": "Africa",
+      "region": "Southern Africa"
+    },
+    {
+      "id": "AF-MZ",
+      "name": "Mozambique",
+      "capital": "Maputo",
+      "code": "MZ",
+      "continent": "Africa",
+      "region": "Southern Africa"
+    },
+    {
+      "id": "AF-LS",
+      "name": "Lesotho",
+      "capital": "Maseru",
+      "code": "LS",
+      "continent": "Africa",
+      "region": "Southern Africa"
+    },
+    {
+      "id": "AF-SZ",
+      "name": "Eswatini",
+      "capital": "Mbabane",
+      "code": "SZ",
+      "continent": "Africa",
+      "region": "Southern Africa"
+    },
+    {
+      "id": "AF-AO",
+      "name": "Angola",
+      "capital": "Luanda",
+      "code": "AO",
+      "continent": "Africa",
+      "region": "Southern Africa"
+    },
+    {
+      "id": "AS-SA",
+      "name": "Saudi Arabia",
+      "capital": "Riyadh",
+      "code": "SA",
+      "continent": "Asia",
+      "region": "Middle East"
+    },
+    {
+      "id": "AS-AE",
+      "name": "United Arab Emirates",
+      "capital": "Abu Dhabi",
+      "code": "AE",
+      "continent": "Asia",
+      "region": "Middle East"
+    },
+    {
+      "id": "AS-QA",
+      "name": "Qatar",
+      "capital": "Doha",
+      "code": "QA",
+      "continent": "Asia",
+      "region": "Middle East"
+    },
+    {
+      "id": "AS-KW",
+      "name": "Kuwait",
+      "capital": "Kuwait City",
+      "code": "KW",
+      "continent": "Asia",
+      "region": "Middle East"
+    },
+    {
+      "id": "AS-BH",
+      "name": "Bahrain",
+      "capital": "Manama",
+      "code": "BH",
+      "continent": "Asia",
+      "region": "Middle East"
+    },
+    {
+      "id": "AS-OM",
+      "name": "Oman",
+      "capital": "Muscat",
+      "code": "OM",
+      "continent": "Asia",
+      "region": "Middle East"
+    },
+    {
+      "id": "AS-YE",
+      "name": "Yemen",
+      "capital": "Sana'a",
+      "code": "YE",
+      "continent": "Asia",
+      "region": "Middle East"
+    },
+    {
+      "id": "AS-IQ",
+      "name": "Iraq",
+      "capital": "Baghdad",
+      "code": "IQ",
+      "continent": "Asia",
+      "region": "Middle East"
+    },
+    {
+      "id": "AS-IR",
+      "name": "Iran",
+      "capital": "Tehran",
+      "code": "IR",
+      "continent": "Asia",
+      "region": "Middle East"
+    },
+    {
+      "id": "AS-IL",
+      "name": "Israel",
+      "capital": "Jerusalem",
+      "code": "IL",
+      "continent": "Asia",
+      "region": "Middle East"
+    },
+    {
+      "id": "AS-JO",
+      "name": "Jordan",
+      "capital": "Amman",
+      "code": "JO",
+      "continent": "Asia",
+      "region": "Middle East"
+    },
+    {
+      "id": "AS-LB",
+      "name": "Lebanon",
+      "capital": "Beirut",
+      "code": "LB",
+      "continent": "Asia",
+      "region": "Middle East"
+    },
+    {
+      "id": "AS-SY",
+      "name": "Syria",
+      "capital": "Damascus",
+      "code": "SY",
+      "continent": "Asia",
+      "region": "Middle East"
+    },
+    {
+      "id": "AS-PS",
+      "name": "Palestine",
+      "capital": "Ramallah",
+      "code": "PS",
+      "continent": "Asia",
+      "region": "Middle East"
+    },
+    {
+      "id": "AS-TR",
+      "name": "Turkey",
+      "capital": "Ankara",
+      "code": "TR",
+      "continent": "Asia",
+      "region": "Middle East"
+    },
+    {
+      "id": "AS-CY",
+      "name": "Cyprus",
+      "capital": "Nicosia",
+      "code": "CY",
+      "continent": "Asia",
+      "region": "Middle East"
+    },
+    {
+      "id": "AS-IN",
+      "name": "India",
+      "capital": "New Delhi",
+      "code": "IN",
+      "continent": "Asia",
+      "region": "South Asia"
+    },
+    {
+      "id": "AS-PK",
+      "name": "Pakistan",
+      "capital": "Islamabad",
+      "code": "PK",
+      "continent": "Asia",
+      "region": "South Asia"
+    },
+    {
+      "id": "AS-BD",
+      "name": "Bangladesh",
+      "capital": "Dhaka",
+      "code": "BD",
+      "continent": "Asia",
+      "region": "South Asia"
+    },
+    {
+      "id": "AS-LK",
+      "name": "Sri Lanka",
+      "capital": "Sri Jayawardenepura Kotte",
+      "code": "LK",
+      "continent": "Asia",
+      "region": "South Asia"
+    },
+    {
+      "id": "AS-NP",
+      "name": "Nepal",
+      "capital": "Kathmandu",
+      "code": "NP",
+      "continent": "Asia",
+      "region": "South Asia"
+    },
+    {
+      "id": "AS-BT",
+      "name": "Bhutan",
+      "capital": "Thimphu",
+      "code": "BT",
+      "continent": "Asia",
+      "region": "South Asia"
+    },
+    {
+      "id": "AS-MV",
+      "name": "Maldives",
+      "capital": "Malé",
+      "code": "MV",
+      "continent": "Asia",
+      "region": "South Asia"
+    },
+    {
+      "id": "AS-AF",
+      "name": "Afghanistan",
+      "capital": "Kabul",
+      "code": "AF",
+      "continent": "Asia",
+      "region": "South Asia"
+    },
+    {
+      "id": "AS-ID",
+      "name": "Indonesia",
+      "capital": "Jakarta",
+      "code": "ID",
+      "continent": "Asia",
+      "region": "Southeast Asia"
+    },
+    {
+      "id": "AS-MY",
+      "name": "Malaysia",
+      "capital": "Kuala Lumpur",
+      "code": "MY",
+      "continent": "Asia",
+      "region": "Southeast Asia"
+    },
+    {
+      "id": "AS-TH",
+      "name": "Thailand",
+      "capital": "Bangkok",
+      "code": "TH",
+      "continent": "Asia",
+      "region": "Southeast Asia"
+    },
+    {
+      "id": "AS-VN",
+      "name": "Vietnam",
+      "capital": "Hanoi",
+      "code": "VN",
+      "continent": "Asia",
+      "region": "Southeast Asia"
+    },
+    {
+      "id": "AS-PH",
+      "name": "Philippines",
+      "capital": "Manila",
+      "code": "PH",
+      "continent": "Asia",
+      "region": "Southeast Asia"
+    },
+    {
+      "id": "AS-MM",
+      "name": "Myanmar",
+      "capital": "Naypyidaw",
+      "code": "MM",
+      "continent": "Asia",
+      "region": "Southeast Asia"
+    },
+    {
+      "id": "AS-KH",
+      "name": "Cambodia",
+      "capital": "Phnom Penh",
+      "code": "KH",
+      "continent": "Asia",
+      "region": "Southeast Asia"
+    },
+    {
+      "id": "AS-LA",
+      "name": "Laos",
+      "capital": "Vientiane",
+      "code": "LA",
+      "continent": "Asia",
+      "region": "Southeast Asia"
+    },
+    {
+      "id": "AS-SG",
+      "name": "Singapore",
+      "capital": "Singapore",
+      "code": "SG",
+      "continent": "Asia",
+      "region": "Southeast Asia"
+    },
+    {
+      "id": "AS-BN",
+      "name": "Brunei",
+      "capital": "Bandar Seri Begawan",
+      "code": "BN",
+      "continent": "Asia",
+      "region": "Southeast Asia"
+    },
+    {
+      "id": "AS-TL",
+      "name": "Timor-Leste",
+      "capital": "Dili",
+      "code": "TL",
+      "continent": "Asia",
+      "region": "Southeast Asia"
+    },
+    {
+      "id": "AS-CN",
+      "name": "China",
+      "capital": "Beijing",
+      "code": "CN",
+      "continent": "Asia",
+      "region": "East Asia"
+    },
+    {
+      "id": "AS-JP",
+      "name": "Japan",
+      "capital": "Tokyo",
+      "code": "JP",
+      "continent": "Asia",
+      "region": "East Asia"
+    },
+    {
+      "id": "AS-KR",
+      "name": "South Korea",
+      "capital": "Seoul",
+      "code": "KR",
+      "continent": "Asia",
+      "region": "East Asia"
+    },
+    {
+      "id": "AS-KP",
+      "name": "North Korea",
+      "capital": "Pyongyang",
+      "code": "KP",
+      "continent": "Asia",
+      "region": "East Asia"
+    },
+    {
+      "id": "AS-MN",
+      "name": "Mongolia",
+      "capital": "Ulaanbaatar",
+      "code": "MN",
+      "continent": "Asia",
+      "region": "East Asia"
+    },
+    {
+      "id": "AS-KZ",
+      "name": "Kazakhstan",
+      "capital": "Astana",
+      "code": "KZ",
+      "continent": "Asia",
+      "region": "Central Asia"
+    },
+    {
+      "id": "AS-UZ",
+      "name": "Uzbekistan",
+      "capital": "Tashkent",
+      "code": "UZ",
+      "continent": "Asia",
+      "region": "Central Asia"
+    },
+    {
+      "id": "AS-TM",
+      "name": "Turkmenistan",
+      "capital": "Ashgabat",
+      "code": "TM",
+      "continent": "Asia",
+      "region": "Central Asia"
+    },
+    {
+      "id": "AS-KG",
+      "name": "Kyrgyzstan",
+      "capital": "Bishkek",
+      "code": "KG",
+      "continent": "Asia",
+      "region": "Central Asia"
+    },
+    {
+      "id": "AS-TJ",
+      "name": "Tajikistan",
+      "capital": "Dushanbe",
+      "code": "TJ",
+      "continent": "Asia",
+      "region": "Central Asia"
+    },
+    {
+      "id": "AS-AM",
+      "name": "Armenia",
+      "capital": "Yerevan",
+      "code": "AM",
+      "continent": "Asia",
+      "region": "Central Asia"
+    },
+    {
+      "id": "AS-AZ",
+      "name": "Azerbaijan",
+      "capital": "Baku",
+      "code": "AZ",
+      "continent": "Asia",
+      "region": "Central Asia"
+    },
+    {
+      "id": "AS-GE",
+      "name": "Georgia",
+      "capital": "Tbilisi",
+      "code": "GE",
+      "continent": "Asia",
+      "region": "Central Asia"
+    },
+    {
+      "id": "EU-FR",
+      "name": "France",
+      "capital": "Paris",
+      "code": "FR",
+      "continent": "Europe",
+      "region": "Western Europe"
+    },
+    {
+      "id": "EU-DE",
+      "name": "Germany",
+      "capital": "Berlin",
+      "code": "DE",
+      "continent": "Europe",
+      "region": "Western Europe"
+    },
+    {
+      "id": "EU-NL",
+      "name": "Netherlands",
+      "capital": "Amsterdam",
+      "code": "NL",
+      "continent": "Europe",
+      "region": "Western Europe"
+    },
+    {
+      "id": "EU-BE",
+      "name": "Belgium",
+      "capital": "Brussels",
+      "code": "BE",
+      "continent": "Europe",
+      "region": "Western Europe"
+    },
+    {
+      "id": "EU-AT",
+      "name": "Austria",
+      "capital": "Vienna",
+      "code": "AT",
+      "continent": "Europe",
+      "region": "Western Europe"
+    },
+    {
+      "id": "EU-CH",
+      "name": "Switzerland",
+      "capital": "Bern",
+      "code": "CH",
+      "continent": "Europe",
+      "region": "Western Europe"
+    },
+    {
+      "id": "EU-LU",
+      "name": "Luxembourg",
+      "capital": "Luxembourg",
+      "code": "LU",
+      "continent": "Europe",
+      "region": "Western Europe"
+    },
+    {
+      "id": "EU-IE",
+      "name": "Ireland",
+      "capital": "Dublin",
+      "code": "IE",
+      "continent": "Europe",
+      "region": "Western Europe"
+    },
+    {
+      "id": "EU-GB",
+      "name": "United Kingdom",
+      "capital": "London",
+      "code": "GB",
+      "continent": "Europe",
+      "region": "Western Europe"
+    },
+    {
+      "id": "EU-SE",
+      "name": "Sweden",
+      "capital": "Stockholm",
+      "code": "SE",
+      "continent": "Europe",
+      "region": "Northern Europe"
+    },
+    {
+      "id": "EU-NO",
+      "name": "Norway",
+      "capital": "Oslo",
+      "code": "NO",
+      "continent": "Europe",
+      "region": "Northern Europe"
+    },
+    {
+      "id": "EU-DK",
+      "name": "Denmark",
+      "capital": "Copenhagen",
+      "code": "DK",
+      "continent": "Europe",
+      "region": "Northern Europe"
+    },
+    {
+      "id": "EU-FI",
+      "name": "Finland",
+      "capital": "Helsinki",
+      "code": "FI",
+      "continent": "Europe",
+      "region": "Northern Europe"
+    },
+    {
+      "id": "EU-IS",
+      "name": "Iceland",
+      "capital": "Reykjavík",
+      "code": "IS",
+      "continent": "Europe",
+      "region": "Northern Europe"
+    },
+    {
+      "id": "EU-EE",
+      "name": "Estonia",
+      "capital": "Tallinn",
+      "code": "EE",
+      "continent": "Europe",
+      "region": "Northern Europe"
+    },
+    {
+      "id": "EU-LV",
+      "name": "Latvia",
+      "capital": "Riga",
+      "code": "LV",
+      "continent": "Europe",
+      "region": "Northern Europe"
+    },
+    {
+      "id": "EU-LT",
+      "name": "Lithuania",
+      "capital": "Vilnius",
+      "code": "LT",
+      "continent": "Europe",
+      "region": "Northern Europe"
+    },
+    {
+      "id": "EU-IT",
+      "name": "Italy",
+      "capital": "Rome",
+      "code": "IT",
+      "continent": "Europe",
+      "region": "Southern Europe"
+    },
+    {
+      "id": "EU-ES",
+      "name": "Spain",
+      "capital": "Madrid",
+      "code": "ES",
+      "continent": "Europe",
+      "region": "Southern Europe"
+    },
+    {
+      "id": "EU-PT",
+      "name": "Portugal",
+      "capital": "Lisbon",
+      "code": "PT",
+      "continent": "Europe",
+      "region": "Southern Europe"
+    },
+    {
+      "id": "EU-GR",
+      "name": "Greece",
+      "capital": "Athens",
+      "code": "GR",
+      "continent": "Europe",
+      "region": "Southern Europe"
+    },
+    {
+      "id": "EU-HR",
+      "name": "Croatia",
+      "capital": "Zagreb",
+      "code": "HR",
+      "continent": "Europe",
+      "region": "Southern Europe"
+    },
+    {
+      "id": "EU-SI",
+      "name": "Slovenia",
+      "capital": "Ljubljana",
+      "code": "SI",
+      "continent": "Europe",
+      "region": "Southern Europe"
+    },
+    {
+      "id": "EU-MT",
+      "name": "Malta",
+      "capital": "Valletta",
+      "code": "MT",
+      "continent": "Europe",
+      "region": "Southern Europe"
+    },
+    {
+      "id": "EU-AL",
+      "name": "Albania",
+      "capital": "Tirana",
+      "code": "AL",
+      "continent": "Europe",
+      "region": "Southern Europe"
+    },
+    {
+      "id": "EU-MK",
+      "name": "North Macedonia",
+      "capital": "Skopje",
+      "code": "MK",
+      "continent": "Europe",
+      "region": "Southern Europe"
+    },
+    {
+      "id": "EU-BA",
+      "name": "Bosnia and Herzegovina",
+      "capital": "Sarajevo",
+      "code": "BA",
+      "continent": "Europe",
+      "region": "Southern Europe"
+    },
+    {
+      "id": "EU-ME",
+      "name": "Montenegro",
+      "capital": "Podgorica",
+      "code": "ME",
+      "continent": "Europe",
+      "region": "Southern Europe"
+    },
+    {
+      "id": "EU-RS",
+      "name": "Serbia",
+      "capital": "Belgrade",
+      "code": "RS",
+      "continent": "Europe",
+      "region": "Southern Europe"
+    },
+    {
+      "id": "EU-XK",
+      "name": "Kosovo",
+      "capital": "Pristina",
+      "code": "XK",
+      "continent": "Europe",
+      "region": "Southern Europe"
+    },
+    {
+      "id": "EU-PL",
+      "name": "Poland",
+      "capital": "Warsaw",
+      "code": "PL",
+      "continent": "Europe",
+      "region": "Eastern Europe"
+    },
+    {
+      "id": "EU-CZ",
+      "name": "Czechia",
+      "capital": "Prague",
+      "code": "CZ",
+      "continent": "Europe",
+      "region": "Eastern Europe"
+    },
+    {
+      "id": "EU-SK",
+      "name": "Slovakia",
+      "capital": "Bratislava",
+      "code": "SK",
+      "continent": "Europe",
+      "region": "Eastern Europe"
+    },
+    {
+      "id": "EU-HU",
+      "name": "Hungary",
+      "capital": "Budapest",
+      "code": "HU",
+      "continent": "Europe",
+      "region": "Eastern Europe"
+    },
+    {
+      "id": "EU-RO",
+      "name": "Romania",
+      "capital": "Bucharest",
+      "code": "RO",
+      "continent": "Europe",
+      "region": "Eastern Europe"
+    },
+    {
+      "id": "EU-BG",
+      "name": "Bulgaria",
+      "capital": "Sofia",
+      "code": "BG",
+      "continent": "Europe",
+      "region": "Eastern Europe"
+    },
+    {
+      "id": "EU-UA",
+      "name": "Ukraine",
+      "capital": "Kyiv",
+      "code": "UA",
+      "continent": "Europe",
+      "region": "Eastern Europe"
+    },
+    {
+      "id": "EU-BY",
+      "name": "Belarus",
+      "capital": "Minsk",
+      "code": "BY",
+      "continent": "Europe",
+      "region": "Eastern Europe"
+    },
+    {
+      "id": "EU-MD",
+      "name": "Moldova",
+      "capital": "Chisinau",
+      "code": "MD",
+      "continent": "Europe",
+      "region": "Eastern Europe"
+    },
+    {
+      "id": "EU-RU",
+      "name": "Russia",
+      "capital": "Moscow",
+      "code": "RU",
+      "continent": "Europe",
+      "region": "Eastern Europe"
+    },
+    {
+      "id": "EU-MC",
+      "name": "Monaco",
+      "capital": "Monaco",
+      "code": "MC",
+      "continent": "Europe",
+      "region": "Microstates"
+    },
+    {
+      "id": "EU-SM",
+      "name": "San Marino",
+      "capital": "San Marino",
+      "code": "SM",
+      "continent": "Europe",
+      "region": "Microstates"
+    },
+    {
+      "id": "EU-VA",
+      "name": "Vatican City",
+      "capital": "Vatican City",
+      "code": "VA",
+      "continent": "Europe",
+      "region": "Microstates"
+    },
+    {
+      "id": "EU-LI",
+      "name": "Liechtenstein",
+      "capital": "Vaduz",
+      "code": "LI",
+      "continent": "Europe",
+      "region": "Microstates"
+    },
+    {
+      "id": "NO-CA",
+      "name": "Canada",
+      "capital": "Ottawa",
+      "code": "CA",
+      "continent": "North America",
+      "region": "North America"
+    },
+    {
+      "id": "NO-US",
+      "name": "United States",
+      "capital": "Washington, D.C.",
+      "code": "US",
+      "continent": "North America",
+      "region": "North America"
+    },
+    {
+      "id": "NO-MX",
+      "name": "Mexico",
+      "capital": "Mexico City",
+      "code": "MX",
+      "continent": "North America",
+      "region": "North America"
+    },
+    {
+      "id": "NO-BZ",
+      "name": "Belize",
+      "capital": "Belmopan",
+      "code": "BZ",
+      "continent": "North America",
+      "region": "Central America"
+    },
+    {
+      "id": "NO-GT",
+      "name": "Guatemala",
+      "capital": "Guatemala City",
+      "code": "GT",
+      "continent": "North America",
+      "region": "Central America"
+    },
+    {
+      "id": "NO-HN",
+      "name": "Honduras",
+      "capital": "Tegucigalpa",
+      "code": "HN",
+      "continent": "North America",
+      "region": "Central America"
+    },
+    {
+      "id": "NO-SV",
+      "name": "El Salvador",
+      "capital": "San Salvador",
+      "code": "SV",
+      "continent": "North America",
+      "region": "Central America"
+    },
+    {
+      "id": "NO-NI",
+      "name": "Nicaragua",
+      "capital": "Managua",
+      "code": "NI",
+      "continent": "North America",
+      "region": "Central America"
+    },
+    {
+      "id": "NO-CR",
+      "name": "Costa Rica",
+      "capital": "San José",
+      "code": "CR",
+      "continent": "North America",
+      "region": "Central America"
+    },
+    {
+      "id": "NO-PA",
+      "name": "Panama",
+      "capital": "Panama City",
+      "code": "PA",
+      "continent": "North America",
+      "region": "Central America"
+    },
+    {
+      "id": "NO-CU",
+      "name": "Cuba",
+      "capital": "Havana",
+      "code": "CU",
+      "continent": "North America",
+      "region": "Caribbean"
+    },
+    {
+      "id": "NO-JM",
+      "name": "Jamaica",
+      "capital": "Kingston",
+      "code": "JM",
+      "continent": "North America",
+      "region": "Caribbean"
+    },
+    {
+      "id": "NO-HT",
+      "name": "Haiti",
+      "capital": "Port-au-Prince",
+      "code": "HT",
+      "continent": "North America",
+      "region": "Caribbean"
+    },
+    {
+      "id": "NO-DO",
+      "name": "Dominican Republic",
+      "capital": "Santo Domingo",
+      "code": "DO",
+      "continent": "North America",
+      "region": "Caribbean"
+    },
+    {
+      "id": "NO-BS",
+      "name": "Bahamas",
+      "capital": "Nassau",
+      "code": "BS",
+      "continent": "North America",
+      "region": "Caribbean"
+    },
+    {
+      "id": "NO-BB",
+      "name": "Barbados",
+      "capital": "Bridgetown",
+      "code": "BB",
+      "continent": "North America",
+      "region": "Caribbean"
+    },
+    {
+      "id": "NO-TT",
+      "name": "Trinidad and Tobago",
+      "capital": "Port of Spain",
+      "code": "TT",
+      "continent": "North America",
+      "region": "Caribbean"
+    },
+    {
+      "id": "NO-LC",
+      "name": "Saint Lucia",
+      "capital": "Castries",
+      "code": "LC",
+      "continent": "North America",
+      "region": "Caribbean"
+    },
+    {
+      "id": "NO-GD",
+      "name": "Grenada",
+      "capital": "St. George's",
+      "code": "GD",
+      "continent": "North America",
+      "region": "Caribbean"
+    },
+    {
+      "id": "NO-VC",
+      "name": "Saint Vincent and the Grenadines",
+      "capital": "Kingstown",
+      "code": "VC",
+      "continent": "North America",
+      "region": "Caribbean"
+    },
+    {
+      "id": "NO-AG",
+      "name": "Antigua and Barbuda",
+      "capital": "St. John's",
+      "code": "AG",
+      "continent": "North America",
+      "region": "Caribbean"
+    },
+    {
+      "id": "NO-DM",
+      "name": "Dominica",
+      "capital": "Roseau",
+      "code": "DM",
+      "continent": "North America",
+      "region": "Caribbean"
+    },
+    {
+      "id": "NO-KN",
+      "name": "Saint Kitts and Nevis",
+      "capital": "Basseterre",
+      "code": "KN",
+      "continent": "North America",
+      "region": "Caribbean"
+    },
+    {
+      "id": "SO-BR",
+      "name": "Brazil",
+      "capital": "Brasília",
+      "code": "BR",
+      "continent": "South America",
+      "region": "South America"
+    },
+    {
+      "id": "SO-AR",
+      "name": "Argentina",
+      "capital": "Buenos Aires",
+      "code": "AR",
+      "continent": "South America",
+      "region": "South America"
+    },
+    {
+      "id": "SO-CL",
+      "name": "Chile",
+      "capital": "Santiago",
+      "code": "CL",
+      "continent": "South America",
+      "region": "South America"
+    },
+    {
+      "id": "SO-PE",
+      "name": "Peru",
+      "capital": "Lima",
+      "code": "PE",
+      "continent": "South America",
+      "region": "South America"
+    },
+    {
+      "id": "SO-CO",
+      "name": "Colombia",
+      "capital": "Bogotá",
+      "code": "CO",
+      "continent": "South America",
+      "region": "South America"
+    },
+    {
+      "id": "SO-VE",
+      "name": "Venezuela",
+      "capital": "Caracas",
+      "code": "VE",
+      "continent": "South America",
+      "region": "South America"
+    },
+    {
+      "id": "SO-EC",
+      "name": "Ecuador",
+      "capital": "Quito",
+      "code": "EC",
+      "continent": "South America",
+      "region": "South America"
+    },
+    {
+      "id": "SO-BO",
+      "name": "Bolivia",
+      "capital": "Sucre",
+      "code": "BO",
+      "continent": "South America",
+      "region": "South America"
+    },
+    {
+      "id": "SO-PY",
+      "name": "Paraguay",
+      "capital": "Asunción",
+      "code": "PY",
+      "continent": "South America",
+      "region": "South America"
+    },
+    {
+      "id": "SO-UY",
+      "name": "Uruguay",
+      "capital": "Montevideo",
+      "code": "UY",
+      "continent": "South America",
+      "region": "South America"
+    },
+    {
+      "id": "SO-GY",
+      "name": "Guyana",
+      "capital": "Georgetown",
+      "code": "GY",
+      "continent": "South America",
+      "region": "South America"
+    },
+    {
+      "id": "SO-SR",
+      "name": "Suriname",
+      "capital": "Paramaribo",
+      "code": "SR",
+      "continent": "South America",
+      "region": "South America"
+    },
+    {
+      "id": "OC-AU",
+      "name": "Australia",
+      "capital": "Canberra",
+      "code": "AU",
+      "continent": "Oceania",
+      "region": "Oceania"
+    },
+    {
+      "id": "OC-NZ",
+      "name": "New Zealand",
+      "capital": "Wellington",
+      "code": "NZ",
+      "continent": "Oceania",
+      "region": "Oceania"
+    },
+    {
+      "id": "OC-PG",
+      "name": "Papua New Guinea",
+      "capital": "Port Moresby",
+      "code": "PG",
+      "continent": "Oceania",
+      "region": "Oceania"
+    },
+    {
+      "id": "OC-FJ",
+      "name": "Fiji",
+      "capital": "Suva",
+      "code": "FJ",
+      "continent": "Oceania",
+      "region": "Oceania"
+    },
+    {
+      "id": "OC-SB",
+      "name": "Solomon Islands",
+      "capital": "Honiara",
+      "code": "SB",
+      "continent": "Oceania",
+      "region": "Oceania"
+    },
+    {
+      "id": "OC-VU",
+      "name": "Vanuatu",
+      "capital": "Port Vila",
+      "code": "VU",
+      "continent": "Oceania",
+      "region": "Oceania"
+    },
+    {
+      "id": "OC-WS",
+      "name": "Samoa",
+      "capital": "Apia",
+      "code": "WS",
+      "continent": "Oceania",
+      "region": "Oceania"
+    },
+    {
+      "id": "OC-KI",
+      "name": "Kiribati",
+      "capital": "Tarawa",
+      "code": "KI",
+      "continent": "Oceania",
+      "region": "Oceania"
+    },
+    {
+      "id": "OC-TO",
+      "name": "Tonga",
+      "capital": "Nuku'alofa",
+      "code": "TO",
+      "continent": "Oceania",
+      "region": "Oceania"
+    },
+    {
+      "id": "OC-FM",
+      "name": "Micronesia",
+      "capital": "Palikir",
+      "code": "FM",
+      "continent": "Oceania",
+      "region": "Oceania"
+    },
+    {
+      "id": "OC-PW",
+      "name": "Palau",
+      "capital": "Ngerulmud",
+      "code": "PW",
+      "continent": "Oceania",
+      "region": "Oceania"
+    },
+    {
+      "id": "OC-MH",
+      "name": "Marshall Islands",
+      "capital": "Majuro",
+      "code": "MH",
+      "continent": "Oceania",
+      "region": "Oceania"
+    },
+    {
+      "id": "OC-NR",
+      "name": "Nauru",
+      "capital": "Yaren",
+      "code": "NR",
+      "continent": "Oceania",
+      "region": "Oceania"
+    },
+    {
+      "id": "OC-TV",
+      "name": "Tuvalu",
+      "capital": "Funafuti",
+      "code": "TV",
+      "continent": "Oceania",
+      "region": "Oceania"
+    }
+  ],
+  "profiles": {
+    "b121e220-34c8-4ae2-a6ea-e99aa3d0e46f": {
+      "fullName": "Augustine Agladima",
+      "email": "austinagladima@gmail.com",
+      "avatarUrl": "",
+      "learningGoal": "Prepare for a Quiz",
+      "createdAt": "2026-08-26T01:58:13.408Z",
+      "xp": 0,
+      "streak": 0,
+      "longestStreak": 0,
+      "lastActiveDate": null,
+      "selectedContinents": [
+        "Europe"
+      ],
+      "notifPrefs": {
+        "weeklyReminder": true
+      },
+      "onboarded": true,
+      "activity": {}
+    }
+  },
+  "progress": {
+    "b121e220-34c8-4ae2-a6ea-e99aa3d0e46f": {}
+  },
+  "quizAttempts": [],
+  "achievements": [],
+  "userAchievements": {
+    "b121e220-34c8-4ae2-a6ea-e99aa3d0e46f": []
+  }
+}

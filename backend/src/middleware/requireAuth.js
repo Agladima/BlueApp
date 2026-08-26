@@ -16,6 +16,7 @@ export async function requireAuth(req, res) {
     return null
   }
 
+  req.authToken = token
   req.user = user
   await ensureProfile(user)
   return { user }

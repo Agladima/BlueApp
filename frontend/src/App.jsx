@@ -19,7 +19,8 @@ import {
   touchStreak,
   weakCountries,
 } from './lib/mastery'
-import { login, logout, signup, googleAuth, forgotPassword } from './api/auth'
+import { login, logout, signup, forgotPassword, changePassword } from './api/auth'
+import { pingBackend } from './api/client'
 import { getCountries } from './api/countries'
 import { getProfile, updateProfile, deleteProfile } from './api/profile'
 import { getProgress, submitAnswer } from './api/progress'
@@ -88,6 +89,18 @@ function logoMark() {
   return <Logo size={30} />
 }
 
+function passwordEyeIcon(visible) {
+  return visible ? '🙈' : '👁️'
+}
+
+function avatarNode(profile, initials, size) {
+  const src = profile?.avatarUrl || profile?.avatar_url || ''
+  if (src) {
+    return <img src={src} alt="" aria-hidden="true" draggable="false" style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
+  }
+  return <div className="avatar" style={{ width: size, height: size, fontSize: Math.max(12, Math.round(size * 0.34)) }}>{initials}</div>
+}
+
 function useBlueApp() {
   const [screen, setScreen] = useState('loading')
   const [view, setView] = useState('dashboard')
@@ -107,6 +120,24 @@ function useBlueApp() {
   const [session, setSession] = useState(null)
   const [quiz, setQuiz] = useState(null)
   const [results, setResults] = useState(null)
+  const [browserReminderEnabled, setBrowserReminderEnabled] = useState(() => localStorage.getItem('blueapp:browser-reminders') === 'true')
+  const [activeContinent, setActiveContinent] = useState(() => localStorage.getItem('blueapp:active-continent') || '')
+  const [weeklyPrompt, setWeeklyPrompt] = useState(null)
+  const [deletePromptOpen, setDeletePromptOpen] = useState(false)
+  const [settingsDraft, setSettingsDraft] = useState(null)
+  const [settingsSaving, setSettingsSaving] = useState(false)
+  const [settingsMessage, setSettingsMessage] = useState('')
+  const [settingsSuccess, setSettingsSuccess] = useState('')
+  const [passwordModalOpen, setPasswordModalOpen] = useState(false)
+  const [passwordSaving, setPasswordSaving] = useState(false)
+  const [passwordError, setPasswordError] = useState('')
+  const [passwordSuccess, setPasswordSuccess] = useState('')
+  const [showLoginPassword, setShowLoginPassword] = useState(false)
+  const [showSignupPassword, setShowSignupPassword] = useState(false)
+  const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false)
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const timerRef = useRef(null)
 
   const persistClientSide = (nextData = data) => {
@@ -138,6 +169,11 @@ function useBlueApp() {
     })
     setCountries(countriesData.countries || COUNTRIES)
     setCurrentEmail(profile?.profile?.email || profile?.email || null)
+    if (profile?.profile?.selectedContinents?.length && !localStorage.getItem('blueapp:active-continent')) {
+      const firstContinent = profile.profile.selectedContinents[0]
+      setActiveContinent(firstContinent)
+      localStorage.setItem('blueapp:active-continent', firstContinent)
+    }
     setScreen(profile?.profile?.onboarded ? 'app' : 'onboarding')
     setLoading(false)
   }
@@ -196,6 +232,23 @@ function useBlueApp() {
   }, [toast])
 
   useEffect(() => {
+    if (screen === 'app' && view === 'settings' && data.profile) {
+      setSettingsDraft({
+        fullName: data.profile.fullName || '',
+        learningGoal: data.profile.learningGoal || '',
+        avatarUrl: data.profile.avatarUrl || '',
+      })
+      setSettingsMessage('')
+    }
+  }, [screen, view, data.profile?.fullName, data.profile?.learningGoal, data.profile?.avatarUrl])
+
+  useEffect(() => {
+    notifyBrowserReminder()
+    const interval = setInterval(notifyBrowserReminder, 5 * 60 * 1000)
+    return () => clearInterval(interval)
+  }, [browserReminderEnabled, data.profile?.notifPrefs?.weeklyReminder, data.quizAttempts, data.profile?.selectedContinents?.join('|'), activeContinent, learnContinent])
+
+  useEffect(() => {
     if (!quiz || quiz.kind !== 'weekly') return undefined
     timerRef.current = setInterval(() => {
       setQuiz((current) => {
@@ -220,6 +273,96 @@ function useBlueApp() {
     } catch {
       // local fallback is intentionally supported for offline development
     }
+  }
+
+  const latestWeeklyAttempt = (attempts = data.quizAttempts) =>
+    attempts
+      .filter((attempt) => attempt.continent)
+      .sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt))[0] || null
+
+  const weeklyReminderState = () => {
+    if (!data.profile?.notifPrefs?.weeklyReminder) return false
+    const latest = latestWeeklyAttempt()
+    const continent = activeContinent || learnContinent || latest?.continent || data.profile.selectedContinents?.[0] || 'Africa'
+    if (!latest) return { continent, phase: 'tomorrow' }
+    const daysSince = Math.floor((Date.now() - new Date(latest.completedAt).getTime()) / 86400000)
+    if (daysSince < 6) return null
+    return {
+      continent,
+      phase: daysSince >= 7 ? 'today' : 'tomorrow',
+    }
+  }
+
+  const notifyBrowserReminder = () => {
+    if (typeof window === 'undefined' || !('Notification' in window)) return
+    if (!browserReminderEnabled || Notification.permission !== 'granted') return
+    const reminder = weeklyReminderState()
+    if (!reminder) return
+
+    const today = todayStr()
+    const lastNotified = localStorage.getItem(`blueapp:last-browser-reminder:${reminder.phase}`)
+    if (lastNotified === today) return
+
+    const title = reminder.phase === 'today' ? 'BlueApp weekly test is ready today' : 'BlueApp weekly test is due tomorrow'
+    const body =
+      reminder.phase === 'today'
+        ? `Open BlueApp to take your ${reminder.continent} test now and keep your streak going.`
+        : `Your ${reminder.continent} weekly test will be ready tomorrow.`
+
+    new Notification(title, {
+      body,
+    })
+    localStorage.setItem(`blueapp:last-browser-reminder:${reminder.phase}`, today)
+  }
+
+  const toggleBrowserReminders = async () => {
+    if (browserReminderEnabled) {
+      setBrowserReminderEnabled(false)
+      localStorage.setItem('blueapp:browser-reminders', 'false')
+      showToast('Browser reminders turned off.')
+      return
+    }
+
+    if (typeof window === 'undefined' || !('Notification' in window)) {
+      showToast('Your browser does not support notifications.')
+      return
+    }
+    const permission = await Notification.requestPermission()
+    if (permission === 'granted') {
+      setBrowserReminderEnabled(true)
+      localStorage.setItem('blueapp:browser-reminders', 'true')
+      showToast('Browser reminders enabled.')
+      notifyBrowserReminder()
+    } else {
+      showToast('Browser reminders were not enabled.')
+    }
+  }
+
+  const dismissWeeklyPrompt = () => {
+    if (!weeklyPrompt) return
+    if (weeklyPrompt.preview) {
+      setWeeklyPrompt(null)
+      return
+    }
+    localStorage.setItem(`blueapp:weekly-prompt-dismissed:${weeklyPrompt.phase}`, todayStr())
+    setWeeklyPrompt(null)
+  }
+
+  const takeWeeklyTestNow = () => {
+    if (!weeklyPrompt) return
+    if (!weeklyPrompt.preview) {
+      localStorage.setItem(`blueapp:weekly-prompt-dismissed:${weeklyPrompt.phase}`, todayStr())
+    }
+    setWeeklyPrompt(null)
+    startWeeklyTest(weeklyPrompt.continent)
+  }
+
+  const openWeeklyPreview = (phase) => {
+    setWeeklyPrompt({
+      continent: activeContinent || learnContinent || data.profile.selectedContinents?.[0] || 'Africa',
+      phase,
+      preview: true,
+    })
   }
 
   const doLogin = async (event) => {
@@ -272,20 +415,6 @@ function useBlueApp() {
     }
   }
 
-  const doGoogleAuth = async () => {
-    try {
-      const payload = await googleAuth({ provider: 'google' })
-      if (payload?.authUrl) {
-        window.location.href = payload.authUrl
-        return
-      }
-      localStorage.setItem('blueapp:token', payload.token)
-      await loadProfile()
-    } catch (error) {
-      setAuthError(error.message || 'Google sign-in failed.')
-    }
-  }
-
   const doLogout = async () => {
     try {
       await logout()
@@ -293,6 +422,136 @@ function useBlueApp() {
       // offline fallback
     }
     localStorage.removeItem('blueapp:token')
+    setScreen('login')
+    setView('dashboard')
+  }
+
+  const updateSettingsDraft = (patch) => {
+    setSettingsSuccess('')
+    setSettingsMessage('')
+    setSettingsDraft((current) => ({ ...(current || { fullName: '', learningGoal: '', avatarUrl: '' }), ...patch }))
+  }
+
+  const handleAvatarUpload = (event) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+    if (!file.type.startsWith('image/')) {
+      setSettingsMessage('Please choose an image file.')
+      return
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setSettingsMessage('Please choose an image smaller than 2MB.')
+      return
+    }
+    const reader = new FileReader()
+    reader.onload = () => {
+      setSettingsMessage('')
+      updateSettingsDraft({ avatarUrl: String(reader.result || '') })
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const saveProfileSettings = async (event) => {
+    event.preventDefault()
+    if (!settingsDraft) return
+
+    const nextProfile = {
+      ...data.profile,
+      fullName: settingsDraft.fullName.trim() || data.profile.fullName,
+      learningGoal: settingsDraft.learningGoal || data.profile.learningGoal,
+      avatarUrl: settingsDraft.avatarUrl || '',
+    }
+
+    const nextData = {
+      ...data,
+      profile: nextProfile,
+    }
+
+    setSettingsSaving(true)
+    setSettingsMessage('')
+    setSettingsSuccess('')
+    try {
+      await saveAndSync(nextData)
+      setSettingsDraft({
+        fullName: nextProfile.fullName || '',
+        learningGoal: nextProfile.learningGoal || '',
+        avatarUrl: nextProfile.avatarUrl || '',
+      })
+      setSettingsSuccess('Profile updated successfully.')
+      showToast('Profile updated.')
+    } catch {
+      setSettingsMessage('Unable to save your changes right now.')
+    } finally {
+      setSettingsSaving(false)
+    }
+  }
+
+  const openPasswordModal = () => {
+    setPasswordError('')
+    setPasswordSuccess('')
+    setShowCurrentPassword(false)
+    setShowNewPassword(false)
+    setShowConfirmPassword(false)
+    setPasswordModalOpen(true)
+  }
+
+  const closePasswordModal = () => {
+    setPasswordModalOpen(false)
+    setPasswordError('')
+    setPasswordSuccess('')
+    setShowCurrentPassword(false)
+    setShowNewPassword(false)
+    setShowConfirmPassword(false)
+  }
+
+  const submitPasswordChange = async (event) => {
+    event.preventDefault()
+    const form = new FormData(event.currentTarget)
+    const currentPassword = String(form.get('currentPassword') || '')
+    const newPassword = String(form.get('newPassword') || '')
+    const confirmPassword = String(form.get('confirmPassword') || '')
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError('New passwords do not match.')
+      return
+    }
+
+    setPasswordSaving(true)
+    setPasswordError('')
+    setPasswordSuccess('')
+    try {
+      await changePassword({ currentPassword, newPassword })
+      setPasswordSuccess('Password updated successfully.')
+      showToast('Password updated.')
+      event.currentTarget.reset()
+      setTimeout(() => {
+        closePasswordModal()
+      }, 650)
+    } catch (error) {
+      setPasswordError(error.message || 'Unable to update password.')
+    } finally {
+      setPasswordSaving(false)
+    }
+  }
+
+  const openDeletePrompt = () => {
+    setDeletePromptOpen(true)
+  }
+
+  const closeDeletePrompt = () => {
+    setDeletePromptOpen(false)
+  }
+
+  const confirmDeleteAccount = async () => {
+    setDeletePromptOpen(false)
+    try {
+      await deleteProfile()
+    } catch {
+      showToast('Unable to delete account right now.')
+      return
+    }
+    localStorage.removeItem('blueapp:token')
+    localStorage.removeItem(`blueapp:data:${currentEmail}`)
     setScreen('login')
     setView('dashboard')
   }
@@ -315,6 +574,9 @@ function useBlueApp() {
     }
     setData(nextData)
     persistClientSide(nextData)
+    const onboardingContinent = obContinents[0] || 'Africa'
+    setActiveContinent(onboardingContinent)
+    localStorage.setItem('blueapp:active-continent', onboardingContinent)
     try {
       await updateProfile({ profile: nextData.profile })
     } catch {
@@ -326,6 +588,18 @@ function useBlueApp() {
 
   const goto = (nextView) => {
     setView(nextView)
+    setDeletePromptOpen(false)
+    setLearnContinent(null)
+    setCountryDetail(null)
+    setSession(null)
+    setQuiz(null)
+    setResults(null)
+    window.scrollTo(0, 0)
+  }
+
+  const goHome = () => {
+    setView('dashboard')
+    setDeletePromptOpen(false)
     setLearnContinent(null)
     setCountryDetail(null)
     setSession(null)
@@ -335,6 +609,8 @@ function useBlueApp() {
   }
 
   const openContinent = (continent) => {
+    setActiveContinent(continent)
+    localStorage.setItem('blueapp:active-continent', continent)
     setLearnContinent(continent)
     setView('continent')
     window.scrollTo(0, 0)
@@ -349,6 +625,8 @@ function useBlueApp() {
   const showToast = (message) => setToast(message)
 
   const startLearningSession = (continent, poolOverride) => {
+    setActiveContinent(continent)
+    localStorage.setItem('blueapp:active-continent', continent)
     let pool = poolOverride || countriesOf(continent).filter((country) => statusOf(data, country.id) !== 'mastered')
     if (pool.length === 0) pool = countriesOf(continent)
     pool = shuffle(pool).slice(0, Math.min(20, pool.length))
@@ -525,6 +803,33 @@ function useBlueApp() {
     setView('quiz-session')
   }
 
+  useEffect(() => {
+    if (screen !== 'app') {
+      setWeeklyPrompt(null)
+      return undefined
+    }
+
+    if (view === 'weekly' || view === 'quiz-session' || view === 'quiz-results' || view === 'session-complete') {
+      setWeeklyPrompt(null)
+      return undefined
+    }
+
+    const reminder = weeklyReminderState()
+    if (!reminder) {
+      setWeeklyPrompt(null)
+      return undefined
+    }
+
+    const dismissKey = `blueapp:weekly-prompt-dismissed:${reminder.phase}`
+    if (localStorage.getItem(dismissKey) === todayStr()) {
+      setWeeklyPrompt(null)
+      return undefined
+    }
+
+    setWeeklyPrompt(reminder)
+    return undefined
+  }, [screen, view, data.quizAttempts, data.profile?.notifPrefs?.weeklyReminder, data.profile?.selectedContinents?.join('|')])
+
   const shellWrap = (content) => {
     const profile = data.profile
     const initials = (profile.fullName || '?')
@@ -568,7 +873,7 @@ function useBlueApp() {
             ))}
           </nav>
           <div className="sidebar-bottom">
-            <div className="avatar">{initials}</div>
+            {avatarNode(profile, initials, 36)}
             <div className="sidebar-user">
               <div className="name">{profile.fullName}</div>
               <div className="mail">{profile.email}</div>
@@ -591,6 +896,134 @@ function useBlueApp() {
           ))}
         </nav>
         {toast ? <div className="toast">✨ {toast}</div> : null}
+        {weeklyPrompt ? (
+          <div className="weekly-modal-overlay" role="presentation">
+            <div className="weekly-modal" role="dialog" aria-modal="true" aria-labelledby="weekly-reminder-title">
+              <div className="weekly-modal-top">
+                <div>
+                  <div className="pill" style={{ marginBottom: 10 }}>
+                    {weeklyPrompt.phase === 'today' ? 'Due today' : 'Due tomorrow'}
+                  </div>
+                  <h3 id="weekly-reminder-title" style={{ fontSize: 20 }}>
+                    Your weekly test is {weeklyPrompt.phase === 'today' ? 'ready now' : 'coming tomorrow'}
+                  </h3>
+                </div>
+                <button type="button" className="weekly-modal-close" aria-label="Dismiss reminder" onClick={dismissWeeklyPrompt}>
+                  ×
+                </button>
+              </div>
+              <p className="helper" style={{ marginTop: 10 }}>
+                {weeklyPrompt.phase === 'today'
+                  ? `You can take your ${weeklyPrompt.continent} test now.`
+                  : `Your ${weeklyPrompt.continent} weekly test will be ready tomorrow.`}
+              </p>
+              <div className="weekly-modal-actions">
+                {weeklyPrompt.phase === 'today' ? (
+                  <button type="button" className="btn btn-primary" onClick={takeWeeklyTestNow}>
+                    Take Test
+                  </button>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        ) : null}
+        {deletePromptOpen ? (
+          <div className="weekly-modal-overlay" role="presentation">
+            <div className="weekly-modal" role="dialog" aria-modal="true" aria-labelledby="delete-account-title">
+              <div className="weekly-modal-top">
+                <div>
+                  <h3 id="delete-account-title" style={{ fontSize: 20 }}>
+                    Do you want to delete your account?
+                  </h3>
+                </div>
+                <button type="button" className="weekly-modal-close" aria-label="Cancel delete account" onClick={closeDeletePrompt}>
+                  ×
+                </button>
+              </div>
+              <p className="helper" style={{ marginTop: 10 }}>
+                This will permanently remove your account, profile, and progress.
+              </p>
+              <div className="weekly-modal-actions">
+                <button type="button" className="btn btn-secondary" onClick={closeDeletePrompt}>
+                  No
+                </button>
+                <button type="button" className="btn btn-primary" onClick={confirmDeleteAccount}>
+                  Yes
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+        {passwordModalOpen ? (
+          <div className="weekly-modal-overlay" role="presentation">
+            <div className="weekly-modal" role="dialog" aria-modal="true" aria-labelledby="change-password-title">
+              <div className="weekly-modal-top">
+                <div>
+                  <h3 id="change-password-title" style={{ fontSize: 20 }}>
+                    Change your password
+                  </h3>
+                </div>
+                <button type="button" className="weekly-modal-close" aria-label="Close password dialog" onClick={closePasswordModal}>
+                  ×
+                </button>
+              </div>
+              <form onSubmit={submitPasswordChange} style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 14 }}>
+                <div className="field">
+                  <label>Current Password</label>
+                  <div style={{ position: 'relative' }}>
+                    <input type={showCurrentPassword ? 'text' : 'password'} name="currentPassword" required style={{ paddingRight: 46 }} />
+                    <button
+                      type="button"
+                      aria-label={showCurrentPassword ? 'Hide current password' : 'Show current password'}
+                      onClick={() => setShowCurrentPassword((current) => !current)}
+                      style={{ position: 'absolute', right: 6, top: '50%', transform: 'translateY(-50%)', width: 34, height: 34, borderRadius: 8, color: 'var(--taupe)' }}
+                    >
+                      {passwordEyeIcon(showCurrentPassword)}
+                    </button>
+                  </div>
+                </div>
+                <div className="field">
+                  <label>New Password</label>
+                  <div style={{ position: 'relative' }}>
+                    <input type={showNewPassword ? 'text' : 'password'} name="newPassword" required style={{ paddingRight: 46 }} />
+                    <button
+                      type="button"
+                      aria-label={showNewPassword ? 'Hide new password' : 'Show new password'}
+                      onClick={() => setShowNewPassword((current) => !current)}
+                      style={{ position: 'absolute', right: 6, top: '50%', transform: 'translateY(-50%)', width: 34, height: 34, borderRadius: 8, color: 'var(--taupe)' }}
+                    >
+                      {passwordEyeIcon(showNewPassword)}
+                    </button>
+                  </div>
+                </div>
+                <div className="field">
+                  <label>Confirm New Password</label>
+                  <div style={{ position: 'relative' }}>
+                    <input type={showConfirmPassword ? 'text' : 'password'} name="confirmPassword" required style={{ paddingRight: 46 }} />
+                    <button
+                      type="button"
+                      aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+                      onClick={() => setShowConfirmPassword((current) => !current)}
+                      style={{ position: 'absolute', right: 6, top: '50%', transform: 'translateY(-50%)', width: 34, height: 34, borderRadius: 8, color: 'var(--taupe)' }}
+                    >
+                      {passwordEyeIcon(showConfirmPassword)}
+                    </button>
+                  </div>
+                </div>
+                {passwordError ? <p className="helper" style={{ color: 'var(--review)' }}>{passwordError}</p> : null}
+                {passwordSuccess ? <p className="helper" style={{ color: 'var(--burgundy)' }}>{passwordSuccess}</p> : null}
+                <div className="weekly-modal-actions" style={{ justifyContent: 'flex-end' }}>
+                  <button type="button" className="btn btn-secondary" onClick={closePasswordModal}>
+                    Cancel
+                  </button>
+                  <button type="submit" className="btn btn-primary" disabled={passwordSaving}>
+                    {passwordSaving ? 'Updating...' : 'Update Password'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        ) : null}
       </div>
     )
   }
@@ -1172,7 +1605,9 @@ function useBlueApp() {
       <>
         <div className="page-header"><h1 style={{ fontSize: 26 }}>Profile</h1></div>
         <div className="card" style={{ textAlign: 'center', maxWidth: 420, marginBottom: 20 }}>
-          <div className="avatar" style={{ width: 64, height: 64, fontSize: 22, margin: '0 auto' }}>{initials}</div>
+          <div style={{ margin: '0 auto', width: 64, height: 64 }}>
+            {avatarNode(profile, initials, 64)}
+          </div>
           <h2 style={{ marginTop: 12, fontSize: 20 }}>{profile.fullName}</h2>
           <p className="helper">{profile.email}</p>
           <p className="helper">Member since {new Date(profile.createdAt).toLocaleDateString()}</p>
@@ -1217,14 +1652,101 @@ function useBlueApp() {
           <h3 style={{ fontSize: 15.5, marginBottom: 6 }}>Account Information</h3>
           <div className="settings-row"><span className="helper">Full Name</span><span>{profile.fullName}</span></div>
           <div className="settings-row"><span className="helper">Email</span><span>{profile.email}</span></div>
-          <div className="settings-row" style={{ cursor: 'pointer' }} onClick={() => showToast('Password reset link sent (demo).')}><span>Change Password</span><span>→</span></div>
+          <div className="settings-row" style={{ cursor: 'pointer' }} onClick={openPasswordModal}><span>Change Password</span><span>→</span></div>
         </div>
+        <form onSubmit={saveProfileSettings}>
+          <div className="card" style={{ maxWidth: 680, marginBottom: 18 }}>
+            <h3 style={{ fontSize: 15.5, marginBottom: 6 }}>Edit Profile</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.5fr) minmax(180px, 220px)', gap: 20, alignItems: 'start' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div className="field">
+                  <label>Full Name</label>
+                  <input
+                    type="text"
+                    value={settingsDraft?.fullName ?? profile.fullName}
+                    onChange={(event) => updateSettingsDraft({ fullName: event.target.value })}
+                    placeholder="Your name"
+                    required
+                  />
+                </div>
+                <div className="field">
+                  <label>Learning Goal</label>
+                  <select value={settingsDraft?.learningGoal ?? profile.learningGoal} onChange={(event) => updateSettingsDraft({ learningGoal: event.target.value })}>
+                    {['Casual Learning', 'Improve My Geography', 'Prepare for a Quiz', 'Become a Geography Expert'].map((goal) => (
+                      <option key={goal} value={goal}>{goal}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="settings-row">
+                  <span className="helper">Email</span>
+                  <span>{profile.email}</span>
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+                <div style={{ width: 96, height: 96 }}>
+                  {avatarNode(
+                    settingsDraft || profile,
+                    (settingsDraft?.fullName || profile.fullName || '?')
+                      .split(' ')
+                      .map((word) => word[0])
+                      .slice(0, 2)
+                      .join('')
+                      .toUpperCase(),
+                    96,
+                  )}
+                </div>
+                <label className="btn btn-secondary" style={{ cursor: 'pointer' }}>
+                  Upload Avatar
+                  <input type="file" accept="image/*" onChange={handleAvatarUpload} style={{ display: 'none' }} />
+                </label>
+                {(settingsDraft?.avatarUrl || profile.avatarUrl) ? (
+                  <button type="button" className="btn btn-ghost" onClick={() => updateSettingsDraft({ avatarUrl: '' })}>
+                    Remove Avatar
+                  </button>
+                ) : null}
+              </div>
+            </div>
+            {settingsMessage ? <p className="helper" style={{ marginTop: 12, color: 'var(--review)' }}>{settingsMessage}</p> : null}
+            {settingsSuccess ? <p className="helper" style={{ marginTop: 12, color: 'var(--burgundy)' }}>{settingsSuccess}</p> : null}
+            <div style={{ display: 'flex', gap: 12, marginTop: 18, flexWrap: 'wrap' }}>
+              <button type="submit" className="btn btn-primary" disabled={settingsSaving}>
+                {settingsSaving ? 'Saving...' : 'Save Changes'}
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => {
+                  setSettingsDraft({
+                    fullName: profile.fullName || '',
+                    learningGoal: profile.learningGoal || '',
+                    avatarUrl: profile.avatarUrl || '',
+                  })
+                  setSettingsMessage('')
+                  setSettingsSuccess('')
+                }}
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+        </form>
         <div className="card" style={{ maxWidth: 480, marginBottom: 18 }}>
           <h3 style={{ fontSize: 15.5, marginBottom: 6 }}>Notifications</h3>
           <div className="settings-row">
             <span>Weekly test reminders</span>
             <button type="button" className={`switch ${profile.notifPrefs.weeklyReminder ? 'on' : ''}`} onClick={toggleNotif} />
           </div>
+          <div className="settings-row">
+            <span>Browser reminders</span>
+            <button
+              type="button"
+              className={`switch ${browserReminderEnabled && typeof Notification !== 'undefined' && Notification.permission === 'granted' ? 'on' : ''}`}
+              onClick={toggleBrowserReminders}
+            />
+          </div>
+          <p className="helper" style={{ marginTop: 10 }}>
+            Browser reminders only appear when you allow notifications in this browser.
+          </p>
         </div>
         <div className="card" style={{ maxWidth: 480, marginBottom: 18 }}>
           <h3 style={{ fontSize: 15.5, marginBottom: 6 }}>Theme</h3>
@@ -1232,14 +1754,9 @@ function useBlueApp() {
         </div>
         <div className="card" style={{ maxWidth: 480 }}>
           <div className="settings-row" style={{ cursor: 'pointer' }} onClick={doLogout}><span>Logout</span><span>⎋</span></div>
-          <div className="settings-row" style={{ cursor: 'pointer', color: 'var(--review)' }} onClick={() => {
-            deleteProfile().catch(() => {})
-            localStorage.removeItem('blueapp:token')
-            localStorage.removeItem(`blueapp:data:${currentEmail}`)
-            setScreen('login')
-          }}>
+          <button type="button" className="settings-row" style={{ cursor: 'pointer', color: 'var(--review)', width: '100%', textAlign: 'left' }} onClick={openDeletePrompt}>
             <span>Delete Account</span><span>🗑️</span>
-          </div>
+          </button>
         </div>
       </>
     )
@@ -1256,12 +1773,23 @@ function useBlueApp() {
             <p style={{ color: 'var(--taupe)', fontSize: 14, margin: '0 0 22px' }}>Log in to continue your geography journey.</p>
             <form onSubmit={doLogin}>
               <div className="field"><label>Email</label><input type="email" name="email" placeholder="you@example.com" required /></div>
-              <div className="field"><label>Password</label><input type="password" name="password" placeholder="••••••••" required /></div>
+              <div className="field">
+                <label>Password</label>
+                <div style={{ position: 'relative' }}>
+                  <input type={showLoginPassword ? 'text' : 'password'} name="password" placeholder="••••••••" required style={{ paddingRight: 46 }} />
+                  <button
+                    type="button"
+                    aria-label={showLoginPassword ? 'Hide password' : 'Show password'}
+                    onClick={() => setShowLoginPassword((current) => !current)}
+                    style={{ position: 'absolute', right: 6, top: '50%', transform: 'translateY(-50%)', width: 34, height: 34, borderRadius: 8, color: 'var(--taupe)' }}
+                  >
+                    {passwordEyeIcon(showLoginPassword)}
+                  </button>
+                </div>
+              </div>
               {authError ? <div className="err" style={{ marginBottom: 14 }}>{authError}</div> : null}
               <button className="btn btn-primary btn-block" type="submit">Log In</button>
             </form>
-            <div className="divider">or</div>
-            <button type="button" className="btn btn-google btn-block" onClick={doGoogleAuth}>{googleIcon()} Continue with Google</button>
             <div className="small-link"><button type="button" onClick={() => { setScreen('forgot'); setForgotSent(false) }}>Forgot password?</button></div>
             <div className="small-link">Don't have an account? <button type="button" onClick={() => setScreen('signup')}>Create one</button></div>
           </div>
@@ -1276,13 +1804,37 @@ function useBlueApp() {
             <form onSubmit={doSignup}>
               <div className="field"><label>Full Name</label><input type="text" name="fullName" placeholder="Ada Lovelace" required /></div>
               <div className="field"><label>Email</label><input type="email" name="email" placeholder="you@example.com" required /></div>
-              <div className="field"><label>Password</label><input type="password" name="password" placeholder="At least 6 characters" required /></div>
-              <div className="field"><label>Confirm Password</label><input type="password" name="confirmPassword" required /></div>
+              <div className="field">
+                <label>Password</label>
+                <div style={{ position: 'relative' }}>
+                  <input type={showSignupPassword ? 'text' : 'password'} name="password" placeholder="At least 6 characters" required style={{ paddingRight: 46 }} />
+                  <button
+                    type="button"
+                    aria-label={showSignupPassword ? 'Hide password' : 'Show password'}
+                    onClick={() => setShowSignupPassword((current) => !current)}
+                    style={{ position: 'absolute', right: 6, top: '50%', transform: 'translateY(-50%)', width: 34, height: 34, borderRadius: 8, color: 'var(--taupe)' }}
+                  >
+                    {passwordEyeIcon(showSignupPassword)}
+                  </button>
+                </div>
+              </div>
+              <div className="field">
+                <label>Confirm Password</label>
+                <div style={{ position: 'relative' }}>
+                  <input type={showSignupConfirmPassword ? 'text' : 'password'} name="confirmPassword" required style={{ paddingRight: 46 }} />
+                  <button
+                    type="button"
+                    aria-label={showSignupConfirmPassword ? 'Hide password' : 'Show password'}
+                    onClick={() => setShowSignupConfirmPassword((current) => !current)}
+                    style={{ position: 'absolute', right: 6, top: '50%', transform: 'translateY(-50%)', width: 34, height: 34, borderRadius: 8, color: 'var(--taupe)' }}
+                  >
+                    {passwordEyeIcon(showSignupConfirmPassword)}
+                  </button>
+                </div>
+              </div>
               {signupError ? <div className="err" style={{ marginBottom: 14 }}>{signupError}</div> : null}
               <button className="btn btn-primary btn-block" type="submit">Create Account</button>
             </form>
-            <div className="divider">or</div>
-            <button type="button" className="btn btn-google btn-block" onClick={doGoogleAuth}>{googleIcon()} Continue with Google</button>
             <div className="small-link">Already have an account? <button type="button" onClick={() => setScreen('login')}>Log in</button></div>
           </div>
         </div>
@@ -1310,18 +1862,18 @@ function useBlueApp() {
       ),
       onboarding: (
         <div className="centered-screen">
-          <div style={{ textAlign: 'center', maxWidth: 600, width: '100%' }}>
+          <div className="onboarding-panel">
             {onboardStep === 1 ? (
               <>
                 <div style={{ fontSize: 52, marginBottom: 10 }}>🌍</div>
                 <h1 style={{ fontSize: 28 }}>Welcome to BlueApp</h1>
-                <p style={{ color: 'var(--taupe)', margin: '12px 0 30px', maxWidth: 340 }}>Master the world's capitals one continent at a time.</p>
+                <p style={{ color: 'var(--taupe)', margin: '12px auto 30px', maxWidth: 340 }}>Master the world's capitals one continent at a time.</p>
                 <button type="button" className="btn btn-primary" onClick={() => setOnboardStep(2)}>Let's Begin</button>
               </>
             ) : onboardStep === 2 ? (
               <>
                 <h1 style={{ fontSize: 24, marginBottom: 6 }}>What would you like to learn first?</h1>
-                <p className="helper" style={{ marginBottom: 20 }}>Choose one or more continents.</p>
+                <p className="helper" style={{ margin: '0 auto 20px', maxWidth: 360 }}>Choose one or more continents.</p>
                 <div className="grid-3" style={{ maxWidth: 520, margin: '0 auto' }}>
                   {CONTINENTS.map((continent) => (
                     <div key={continent} className="continent-card" style={obContinents.includes(continent) ? { borderColor: 'var(--burgundy)', background: 'var(--cream)' } : {}} onClick={() => toggleOBContinent(continent)}>
@@ -1336,6 +1888,7 @@ function useBlueApp() {
             ) : onboardStep === 3 ? (
               <>
                 <h1 style={{ fontSize: 24, marginBottom: 20 }}>What's your learning goal?</h1>
+                <p className="helper" style={{ margin: '0 auto 20px', maxWidth: 360 }}>Pick the goal that best matches how you want to practice.</p>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 340, margin: '0 auto' }}>
                   {['Casual Learning', 'Improve My Geography', 'Prepare for a Quiz', 'Become a Geography Expert'].map((goal) => (
                     <button key={goal} type="button" className={`btn ${obGoal === goal ? 'btn-primary' : 'btn-secondary'} btn-block`} onClick={() => setObGoal(goal)}>{goal}</button>
@@ -1347,7 +1900,7 @@ function useBlueApp() {
               <>
                 <div style={{ fontSize: 52, marginBottom: 10 }}>🎉</div>
                 <h1 style={{ fontSize: 28 }}>You're all set!</h1>
-                <p style={{ color: 'var(--taupe)', margin: '12px 0 30px', maxWidth: 340 }}>Your personalized learning journey is ready.</p>
+                <p style={{ color: 'var(--taupe)', margin: '12px auto 30px', maxWidth: 340 }}>Your personalized learning journey is ready.</p>
                 <button type="button" className="btn btn-primary" onClick={finishOnboarding}>Start Learning</button>
               </>
             )}
@@ -1394,12 +1947,46 @@ function useBlueApp() {
       session,
       quiz,
       results,
+      browserReminderEnabled,
+      settingsDraft,
+      settingsSaving,
+      settingsMessage,
+      settingsSuccess,
+      passwordModalOpen,
+      passwordSaving,
+      passwordError,
+      passwordSuccess,
+      showLoginPassword,
+      showSignupPassword,
+      showSignupConfirmPassword,
+      showCurrentPassword,
+      showNewPassword,
+      showConfirmPassword,
+      weeklyPrompt,
+      deletePromptOpen,
       obContinents,
       obGoal,
+      onboardStep,
       learnContinent,
       countryDetail,
     ],
   )
+
+  useEffect(() => {
+    if (screen !== 'app') return undefined
+
+    const state = { blueapp: 'home' }
+    window.history.replaceState(state, document.title, window.location.href)
+
+    const handlePopState = () => {
+      goHome()
+      window.history.pushState(state, document.title, window.location.href)
+    }
+
+    window.history.pushState(state, document.title, window.location.href)
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [screen])
 
   function weeklyBody() {
     return (
@@ -1467,6 +2054,14 @@ function App() {
 
   useEffect(() => {
     document.title = 'BlueApp - Learn the World\'s Capitals'
+  }, [])
+
+  useEffect(() => {
+    pingBackend()
+    const interval = setInterval(() => {
+      pingBackend()
+    }, 4 * 60 * 1000)
+    return () => clearInterval(interval)
   }, [])
 
   return <>{routeBody()}</>

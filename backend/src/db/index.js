@@ -294,6 +294,37 @@ export async function recoverPassword(email) {
   })
 }
 
+export async function updatePassword(userId, { currentPassword, newPassword, authToken } = {}) {
+  if (!newPassword || String(newPassword).length < 6) {
+    throw new Error('New password must be at least 6 characters long')
+  }
+
+  if (!useSupabase) {
+    const store = loadStore()
+    const user = store.users.find((entry) => entry.id === userId)
+    if (!user) throw new Error('User not found')
+    if (user.password !== currentPassword) {
+      throw new Error('Current password is incorrect')
+    }
+    user.password = newPassword
+    writeStore(store)
+    return { ok: true }
+  }
+
+  if (!authToken) {
+    throw new Error('Missing session token')
+  }
+
+  await supabaseRequest('/auth/v1/user', {
+    method: 'PUT',
+    token: authToken,
+    apikey: env.supabaseSecretKey,
+    body: { password: newPassword },
+  })
+
+  return { ok: true }
+}
+
 export async function getAuthedUser(token) {
   if (!useSupabase) {
     const store = loadStore()

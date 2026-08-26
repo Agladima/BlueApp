@@ -1,4 +1,4 @@
-import { buildGoogleAuthUrl, deleteUser, recoverPassword, signInWithPassword, signUpWithPassword } from '../db/index.js'
+import { buildGoogleAuthUrl, deleteUser, recoverPassword, signInWithPassword, signUpWithPassword, updatePassword } from '../db/index.js'
 
 export async function signupController(req, res, body) {
   const { fullName, email, password } = body
@@ -40,6 +40,20 @@ export async function forgotController(req, res, body) {
     // Keep the UX resilient; password recovery errors shouldn't block the app flow.
   }
   res.end(JSON.stringify({ ok: true }))
+}
+
+export async function passwordController(req, res, body) {
+  try {
+    await updatePassword(req.user.id, {
+      currentPassword: body.currentPassword,
+      newPassword: body.newPassword,
+      authToken: req.authToken,
+    })
+    res.end(JSON.stringify({ ok: true }))
+  } catch (error) {
+    res.writeHead(400, { 'Content-Type': 'application/json' })
+    res.end(JSON.stringify({ error: error.message || 'Unable to update password' }))
+  }
 }
 
 export async function logoutController(req, res) {

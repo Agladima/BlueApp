@@ -4,5 +4,6 @@ export const authRoutes = [
   ['POST', '/auth/google'],
   ['POST', '/auth/forgot-password'],
   ['POST', '/auth/logout'],
+  ['PATCH', '/auth/password'],
   ['DELETE', '/profile'],
 ]
