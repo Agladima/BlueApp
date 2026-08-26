@@ -303,13 +303,26 @@ export async function getAuthedUser(token) {
     return { id: user.id, email: user.email, user_metadata: { full_name: user.fullName } }
   }
 
-  const user = await supabaseRequest('/auth/v1/user', {
-    token,
-    apikey: env.supabaseSecretKey,
-    headers: {},
-  })
-  if (user) await ensureRemoteProfile(user)
-  return user
+  try {
+    const user = await supabaseRequest('/auth/v1/user', {
+      token,
+      apikey: env.supabaseSecretKey,
+      headers: {},
+    })
+    if (user) await ensureRemoteProfile(user)
+    return user
+  } catch (error) {
+    const message = String(error?.message || error || '').toLowerCase()
+    if (
+      message.includes('invalid jwt') ||
+      message.includes('jwt') ||
+      message.includes('unauthorized') ||
+      message.includes('401')
+    ) {
+      return null
+    }
+    throw error
+  }
 }
 
 export async function getProfile(userId) {
