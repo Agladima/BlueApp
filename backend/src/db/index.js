@@ -7,12 +7,25 @@ import { loadStore, writeStore } from './store.js'
 const useSupabase = Boolean(env.supabaseUrl && env.supabaseSecretKey)
 
 function authHeaders({ apikey = env.supabaseSecretKey, token = env.supabaseSecretKey } = {}) {
-  return {
+  const headers = {
     apikey,
-    Authorization: `Bearer ${token}`,
     'Content-Type': 'application/json',
     Accept: 'application/json',
   }
+  if (token && token !== apikey) {
+    headers.Authorization = `Bearer ${token}`
+  }
+  return headers
+}
+
+function isMissingSupabaseTableError(error) {
+  const message = String(error?.message || error || '').toLowerCase()
+  return (
+    message.includes('could not find the table') ||
+    message.includes('schema cache') ||
+    message.includes('does not exist') ||
+    message.includes('42p01')
+  )
 }
 
 async function supabaseRequest(path, { method = 'GET', token = env.supabaseSecretKey, apikey = env.supabaseSecretKey, body, headers = {} } = {}) {
@@ -94,8 +107,18 @@ function localUserById(userId) {
 }
 
 async function ensureRemoteProfile(user) {
-  const existing = await supabaseRequest(`/rest/v1/profiles?id=eq.${user.id}&select=*`, { token: env.supabaseSecretKey, apikey: env.supabaseSecretKey })
-  if (existing?.length) return existing[0]
+  try {
+    const existing = await supabaseRequest(`/rest/v1/profiles?id=eq.${user.id}&select=*`, {
+      token: env.supabaseSecretKey,
+      apikey: env.supabaseSecretKey,
+    })
+    if (existing?.length) return existing[0]
+  } catch (error) {
+    if (isMissingSupabaseTableError(error)) {
+      return demoProfile(user.user_metadata?.full_name || user.full_name || user.email.split('@')[0], user.email)
+    }
+    throw error
+  }
 
   const profile = demoProfile(user.user_metadata?.full_name || user.full_name || user.email.split('@')[0], user.email)
   profile.created_at = profile.createdAt
@@ -108,27 +131,31 @@ async function ensureRemoteProfile(user) {
   profile.notif_weekly_reminder = profile.notifPrefs.weeklyReminder
   profile.onboarded = profile.onboarded
   profile.activity = {}
-  await supabaseRequest('/rest/v1/profiles', {
-    method: 'POST',
-    token: env.supabaseSecretKey,
-    headers: { Prefer: 'return=representation,resolution=merge-duplicates' },
-    body: {
-      id: user.id,
-      full_name: profile.fullName,
-      email: profile.email,
-      avatar_url: profile.avatarUrl,
-      learning_goal: profile.learningGoal,
-      created_at: profile.createdAt,
-      xp: profile.xp,
-      streak: profile.streak,
-      longest_streak: profile.longestStreak,
-      last_active_date: profile.lastActiveDate,
-      selected_continents: profile.selectedContinents,
-      notif_weekly_reminder: profile.notifPrefs.weeklyReminder,
-      onboarded: profile.onboarded,
-      activity: profile.activity,
-    },
-  })
+  try {
+    await supabaseRequest('/rest/v1/profiles', {
+      method: 'POST',
+      token: env.supabaseSecretKey,
+      headers: { Prefer: 'return=representation,resolution=merge-duplicates' },
+      body: {
+        id: user.id,
+        full_name: profile.fullName,
+        email: profile.email,
+        avatar_url: profile.avatarUrl,
+        learning_goal: profile.learningGoal,
+        created_at: profile.createdAt,
+        xp: profile.xp,
+        streak: profile.streak,
+        longest_streak: profile.longestStreak,
+        last_active_date: profile.lastActiveDate,
+        selected_continents: profile.selectedContinents,
+        notif_weekly_reminder: profile.notifPrefs.weeklyReminder,
+        onboarded: profile.onboarded,
+        activity: profile.activity,
+      },
+    })
+  } catch (error) {
+    if (!isMissingSupabaseTableError(error)) throw error
+  }
   return profile
 }
 
@@ -149,7 +176,12 @@ export function isSupabaseEnabled() {
 
 export async function getCountries() {
   if (!useSupabase) return loadStore().countries || COUNTRIES
-  return supabaseRequest('/rest/v1/countries?select=*&order=continent.asc,region.asc,name.asc')
+  try {
+    return await supabaseRequest('/rest/v1/countries?select=*&order=continent.asc,region.asc,name.asc')
+  } catch (error) {
+    if (isMissingSupabaseTableError(error)) return COUNTRIES
+    throw error
+  }
 }
 
 export async function ensureSeedData() {
@@ -157,32 +189,41 @@ export async function ensureSeedData() {
 
   const countries = await getCountries()
   if (!countries?.length) {
-    await supabaseRequest('/rest/v1/countries', {
-      method: 'POST',
-      token: env.supabaseSecretKey,
-      apikey: env.supabaseSecretKey,
-      headers: { Prefer: 'return=representation' },
-      body: COUNTRIES,
-    })
+    try {
+      await supabaseRequest('/rest/v1/countries', {
+        method: 'POST',
+        token: env.supabaseSecretKey,
+        apikey: env.supabaseSecretKey,
+        headers: { Prefer: 'return=representation' },
+        body: COUNTRIES,
+      })
+    } catch (error) {
+      if (!isMissingSupabaseTableError(error)) throw error
+      return
+    }
   }
 
-  const achievements = await supabaseRequest('/rest/v1/achievements?select=id', {
-    token: env.supabaseSecretKey,
-    apikey: env.supabaseSecretKey,
-  })
-  if (!achievements?.length) {
-    await supabaseRequest('/rest/v1/achievements', {
-      method: 'POST',
+  try {
+    const achievements = await supabaseRequest('/rest/v1/achievements?select=id', {
       token: env.supabaseSecretKey,
       apikey: env.supabaseSecretKey,
-      headers: { Prefer: 'return=representation' },
-      body: ACHIEVEMENT_DEFS.map((achievement) => ({
-        id: achievement.id,
-        icon: achievement.icon,
-        name: achievement.name,
-        description: achievement.desc,
-      })),
     })
+    if (!achievements?.length) {
+      await supabaseRequest('/rest/v1/achievements', {
+        method: 'POST',
+        token: env.supabaseSecretKey,
+        apikey: env.supabaseSecretKey,
+        headers: { Prefer: 'return=representation' },
+        body: ACHIEVEMENT_DEFS.map((achievement) => ({
+          id: achievement.id,
+          icon: achievement.icon,
+          name: achievement.name,
+          description: achievement.desc,
+        })),
+      })
+    }
+  } catch (error) {
+    if (!isMissingSupabaseTableError(error)) throw error
   }
 }
 
@@ -276,8 +317,13 @@ export async function getProfile(userId) {
     const store = loadStore()
     return store.profiles[userId] || null
   }
-  const rows = await supabaseRequest(`/rest/v1/profiles?id=eq.${userId}&select=*`)
-  return mapProfileRow(rows?.[0] || null)
+  try {
+    const rows = await supabaseRequest(`/rest/v1/profiles?id=eq.${userId}&select=*`)
+    return mapProfileRow(rows?.[0] || null)
+  } catch (error) {
+    if (isMissingSupabaseTableError(error)) return null
+    throw error
+  }
 }
 
 export async function ensureProfile(user) {
@@ -365,7 +411,13 @@ export async function getProgressRows(userId) {
     const store = loadStore()
     return store.progress[userId] || {}
   }
-  const rows = await supabaseRequest(`/rest/v1/user_progress?user_id=eq.${userId}&select=*`, { apikey: env.supabaseSecretKey, token: env.supabaseSecretKey })
+  let rows = []
+  try {
+    rows = await supabaseRequest(`/rest/v1/user_progress?user_id=eq.${userId}&select=*`, { apikey: env.supabaseSecretKey, token: env.supabaseSecretKey })
+  } catch (error) {
+    if (isMissingSupabaseTableError(error)) return {}
+    throw error
+  }
   const map = {}
   for (const row of rows || []) {
     map[row.country_id] = {
@@ -387,20 +439,24 @@ export async function saveProgressRow(userId, countryId, progress) {
     return progress
   }
 
-  await supabaseRequest('/rest/v1/user_progress', {
-    method: 'POST',
-    token: env.supabaseSecretKey,
-    apikey: env.supabaseSecretKey,
-    headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
-    body: {
-      user_id: userId,
-      country_id: countryId,
-      correct: progress.correct,
-      wrong: progress.wrong,
-      last_answered: progress.lastAnswered,
-      next_review: progress.nextReview,
-    },
-  })
+  try {
+    await supabaseRequest('/rest/v1/user_progress', {
+      method: 'POST',
+      token: env.supabaseSecretKey,
+      apikey: env.supabaseSecretKey,
+      headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
+      body: {
+        user_id: userId,
+        country_id: countryId,
+        correct: progress.correct,
+        wrong: progress.wrong,
+        last_answered: progress.lastAnswered,
+        next_review: progress.nextReview,
+      },
+    })
+  } catch (error) {
+    if (!isMissingSupabaseTableError(error)) throw error
+  }
   return progress
 }
 
@@ -409,7 +465,13 @@ export async function getQuizAttempts(userId) {
     const store = loadStore()
     return store.quizAttempts.filter((attempt) => attempt.userId === userId)
   }
-  const rows = await supabaseRequest(`/rest/v1/quiz_attempts?user_id=eq.${userId}&select=*&order=completed_at.desc`, { apikey: env.supabaseSecretKey, token: env.supabaseSecretKey })
+  let rows = []
+  try {
+    rows = await supabaseRequest(`/rest/v1/quiz_attempts?user_id=eq.${userId}&select=*&order=completed_at.desc`, { apikey: env.supabaseSecretKey, token: env.supabaseSecretKey })
+  } catch (error) {
+    if (isMissingSupabaseTableError(error)) return []
+    throw error
+  }
   return (rows || []).map((row) => ({
     id: row.id,
     userId: row.user_id,
@@ -451,7 +513,13 @@ export async function getAchievementsIds(userId) {
     const store = loadStore()
     return store.userAchievements[userId] || []
   }
-  const rows = await supabaseRequest(`/rest/v1/user_achievements?user_id=eq.${userId}&select=achievement_id`, { apikey: env.supabaseSecretKey, token: env.supabaseSecretKey })
+  let rows = []
+  try {
+    rows = await supabaseRequest(`/rest/v1/user_achievements?user_id=eq.${userId}&select=achievement_id`, { apikey: env.supabaseSecretKey, token: env.supabaseSecretKey })
+  } catch (error) {
+    if (isMissingSupabaseTableError(error)) return []
+    throw error
+  }
   return (rows || []).map((row) => row.achievement_id)
 }
 
@@ -463,16 +531,20 @@ export async function setAchievementsIds(userId, ids) {
     return ids
   }
   if (!ids.length) return []
-  await supabaseRequest('/rest/v1/user_achievements', {
-    method: 'POST',
-    token: env.supabaseSecretKey,
-    apikey: env.supabaseSecretKey,
-    headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
-    body: ids.map((achievementId) => ({
-      user_id: userId,
-      achievement_id: achievementId,
-    })),
-  })
+  try {
+    await supabaseRequest('/rest/v1/user_achievements', {
+      method: 'POST',
+      token: env.supabaseSecretKey,
+      apikey: env.supabaseSecretKey,
+      headers: { Prefer: 'resolution=merge-duplicates,return=representation' },
+      body: ids.map((achievementId) => ({
+        user_id: userId,
+        achievement_id: achievementId,
+      })),
+    })
+  } catch (error) {
+    if (!isMissingSupabaseTableError(error)) throw error
+  }
   return ids
 }
 
@@ -489,6 +561,10 @@ export async function incrementActivity(userId, dateKey) {
   const profile = await getProfile(userId)
   const activity = { ...(profile?.activity || {}) }
   activity[dateKey] = (activity[dateKey] || 0) + 1
-  await patchProfile(userId, { ...profile, activity })
+  try {
+    await patchProfile(userId, { ...profile, activity })
+  } catch (error) {
+    if (!isMissingSupabaseTableError(error)) throw error
+  }
   return activity
 }

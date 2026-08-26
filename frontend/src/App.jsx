@@ -11,6 +11,7 @@ import {
   countriesOf,
   createDemoState,
   masteryOf,
+  masteredCount,
   overallMastery,
   recordAnswer,
   reviewDue,
@@ -115,21 +116,29 @@ function useBlueApp() {
   }
 
   const loadProfile = async () => {
-    const [profilePayload, countriesPayload, progressPayload] = await Promise.all([
+    const [profilePayload, countriesPayload, progressPayload] = await Promise.allSettled([
       getProfile(),
       getCountries(),
       getProgress(),
     ])
+
+    const profile = profilePayload.status === 'fulfilled' ? profilePayload.value : null
+    const countriesData = countriesPayload.status === 'fulfilled' ? countriesPayload.value : { countries: COUNTRIES }
+    const progressData =
+      progressPayload.status === 'fulfilled'
+        ? progressPayload.value
+        : { progress: {}, quizAttempts: [], activity: {} }
+
     setData({
-      profile: profilePayload.profile,
-      progress: progressPayload.progress || {},
-      quizAttempts: progressPayload.quizAttempts || [],
-      achievements: profilePayload.achievements || [],
-      activity: progressPayload.activity || {},
+      profile: profile?.profile || createDemoState().profile,
+      progress: progressData.progress || {},
+      quizAttempts: progressData.quizAttempts || [],
+      achievements: profile?.achievements || [],
+      activity: progressData.activity || {},
     })
-    setCountries(countriesPayload.countries || COUNTRIES)
-    setCurrentEmail(profilePayload.profile?.email || null)
-    setScreen(profilePayload.profile?.onboarded ? 'app' : 'onboarding')
+    setCountries(countriesData.countries || COUNTRIES)
+    setCurrentEmail(profile?.profile?.email || profile?.email || null)
+    setScreen(profile?.profile?.onboarded ? 'app' : 'onboarding')
     setLoading(false)
   }
 
