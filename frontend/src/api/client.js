@@ -16,7 +16,13 @@ async function request(path, options = {}) {
 
   const payload = await response.json().catch(() => ({}))
   if (!response.ok) {
-    throw new Error(payload.error || 'Request failed')
+    const error = new Error(payload.error || 'Request failed')
+    error.status = response.status
+    if (response.status === 401 && token && !path.startsWith('/auth/')) {
+      localStorage.removeItem('blueapp:token')
+      window.dispatchEvent(new Event('blueapp:session-expired'))
+    }
+    throw error
   }
   return payload
 }

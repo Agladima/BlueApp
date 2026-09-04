@@ -160,6 +160,11 @@ function useBlueApp() {
         ? progressPayload.value
         : { progress: {}, quizAttempts: [], activity: {} }
 
+    const unauthorized = [profilePayload, countriesPayload, progressPayload].some(
+      (result) => result.status === 'rejected' && result.reason?.status === 401,
+    )
+    if (unauthorized) throw new Error('Session expired')
+
     setData({
       profile: profile?.profile || createDemoState().profile,
       progress: progressData.progress || {},
@@ -199,23 +204,11 @@ function useBlueApp() {
       try {
         await loadProfile()
       } catch {
-        try {
-          const raw = localStorage.getItem('blueapp:demo')
-          if (raw) {
-            const parsed = JSON.parse(raw)
-            const safeData = parsed?.data?.profile ? parsed.data : createDemoState()
-            setData(safeData)
-            setCurrentEmail(parsed?.email || safeData.profile.email)
-            setScreen(safeData.profile.onboarded ? 'app' : 'onboarding')
-          } else {
-            setScreen('login')
-          }
-        } catch {
-          localStorage.removeItem('blueapp:demo')
-          localStorage.removeItem('blueapp:token')
-          setData(createDemoState())
-          setScreen('login')
-        }
+        // Never restore the old demo account when a Supabase session is invalid.
+        localStorage.removeItem('blueapp:demo')
+        localStorage.removeItem('blueapp:token')
+        setCurrentEmail(null)
+        setScreen('login')
         setLoading(false)
       }
     }
@@ -223,6 +216,22 @@ function useBlueApp() {
     return () => {
       mounted = false
     }
+  }, [])
+
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      localStorage.removeItem('blueapp:token')
+      setCurrentEmail(null)
+      setSession(null)
+      setQuiz(null)
+      setResults(null)
+      setView('dashboard')
+      setAuthError('Your session expired. Please log in again.')
+      setScreen('login')
+    }
+
+    window.addEventListener('blueapp:session-expired', handleSessionExpired)
+    return () => window.removeEventListener('blueapp:session-expired', handleSessionExpired)
   }, [])
 
   useEffect(() => {
@@ -629,7 +638,7 @@ function useBlueApp() {
     localStorage.setItem('blueapp:active-continent', continent)
     let pool = poolOverride || countriesOf(continent).filter((country) => statusOf(data, country.id) !== 'mastered')
     if (pool.length === 0) pool = countriesOf(continent)
-    pool = shuffle(pool).slice(0, Math.min(20, pool.length))
+    pool = shuffle(pool).slice(0, Math.min(5, pool.length))
     setSession({ continent, pool, idx: 0, revealed: false, correctCount: 0, input: '' })
     setView('learn-session')
   }
